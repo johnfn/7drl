@@ -13,7 +13,7 @@ export class Player extends Entity {
 
     const graphics = new Graphics();
     
-    graphics.beginFill(0x00ff00);
+    graphics.beginFill(0x000000);
     graphics.drawRect(0, 0, 32, 32);
     
     this.addChild(graphics);
