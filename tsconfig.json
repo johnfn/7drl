@@ -5,7 +5,7 @@
     "jsx": "preserve",
     "sourceMap": true,
     "strict": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
@@ -25,10 +25,6 @@
     "noEmit": true
   },
   "include": [
-    "./**/*"
-  ],
-  "exclude": [
-    "./__tests__/bs/bs.d.ts",
-    "./__tests__/**/*"
+    "src"
   ]
 }
