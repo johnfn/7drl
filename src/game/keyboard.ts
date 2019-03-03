@@ -49,7 +49,14 @@ interface QueuedKeyboardEvent {
 }
 
 export class Keyboard {
+  /**
+   * Is a key down?
+   */
   public down     = new KeyInfo();
+
+  /**
+   * Is a key down AND pressed down in this frame?
+   */
   public justDown = new KeyInfo();
 
   private _queuedEvents: QueuedKeyboardEvent[] = [];
