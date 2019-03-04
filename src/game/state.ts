@@ -4,6 +4,7 @@ import { World } from "./world";
 import { Player } from "./player";
 import { Keyboard } from "./keyboard";
 import { Monster } from "./monster";
+import { Camera } from "./camera";
 
 export class GameState {
   public app      : Application;
@@ -13,6 +14,7 @@ export class GameState {
   public world   !: World;
   public player  !: Player;
   public monsters!: Monster[];
+  public camera  !: Camera;
 
   constructor(props: {
     app     : Application;

@@ -3,6 +3,7 @@ import { GameState } from "./state";
 import { Graphics } from "pixi.js";
 import { Util } from "./util";
 import { Rect } from "./rect";
+import { C } from "./constants";
 
 type Building = { 
   rect: Rect;
@@ -15,10 +16,19 @@ type GridCell =
   | { type: "tree" }
   | { type: "water" }
 
+// TODO(bowei): maybe we don't want hard screen transitions
+
+/**
+ * A single screen in the world map.
+ */
 type WorldScreen = {
-  width : number;
-  height: number;
-  cells : GridCell[][];
+  cellWidth  : number;
+  cellheight : number;
+  pixelWidth : number;
+  pixelHeight: number;
+  worldX     : number;
+  worldY     : number;
+  cells      : GridCell[][];
 }
 
 type WorldMap = {
@@ -44,15 +54,21 @@ export class World extends Entity {
     this.drawWorldScreen(this.map.cells[0][0]);
   }
 
+  getActiveWorldScreen(): WorldScreen {
+    const player = this.state.player;
+
+    return this.map.cells[player.worldX][player.worldY];
+  }
+
   generateMap(): WorldMap {
-    const town = this.generateTown();
+    const town = this.generateTown(0, 0);
 
     return {
       cells: [[town]],
     };
   }
 
-  generateTown(): WorldScreen {
+  generateTown(x: number, y: number): WorldScreen {
     // houses
     // shops
     // NPCs
@@ -120,17 +136,21 @@ export class World extends Entity {
     ////////////////////////////////////////////////////////////////////
 
     return {
-      width : townWidthInCells,
-      height: townHeightInCells,
-      cells : map,
+      cellWidth  : townWidthInCells,
+      cellheight : townHeightInCells,
+      pixelWidth : townWidthInCells * C.TILE_WIDTH,
+      pixelHeight: townHeightInCells * C.TILE_HEIGHT,
+      worldX     : x,
+      worldY     : y,
+      cells      : map,
     };
   }
 
   drawWorldScreen(screen: WorldScreen): void {
     // draw town
 
-    for (let i = 0; i < screen.height; i++) {
-      for (let j = 0; j < screen.width; j++) {
+    for (let i = 0; i < screen.cellheight; i++) {
+      for (let j = 0; j < screen.cellWidth; j++) {
         const cell = screen.cells[i][j];
         
         if (cell.type === "grass") {

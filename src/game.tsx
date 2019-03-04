@@ -6,6 +6,7 @@ import { C } from './game/constants';
 import { Player } from './game/player';
 import { Keyboard } from './game/keyboard';
 import { Monster } from './game/monster';
+import { Camera } from './game/camera';
 
 export class Game extends React.Component<{}, {}> {
   initialized = false;
@@ -24,8 +25,8 @@ export class Game extends React.Component<{}, {}> {
     if (!this.canvas) { return; }
 
     const app = new Application({
-      width          : C.GAME_WIDTH,
-      height         : C.GAME_HEIGHT,
+      width          : C.SCREEN_WIDTH,
+      height         : C.SCREEN_HEIGHT,
       backgroundColor: 0x1099bb,
       view           : this.canvas,
     });
@@ -37,15 +38,20 @@ export class Game extends React.Component<{}, {}> {
       keyboard,
     });
 
+    const camera = new Camera();
+
+    this.state.camera = camera;
+
     this.state.world  = new World(this.state);
     this.state.player = new Player(this.state);
     // TODO(bowei): generate monsters procedurally!!!
-    this.state.monsters = [ new Monster(this.state) ];
+    this.state.monsters = [ new Monster(this.state, {x: 5, y: 6}) ];
 
     window.requestAnimationFrame(() => this.gameLoop());
   }
 
   gameLoop() {
+    this.state.camera.update(this.state);
     this.state.keyboard.update();
 
     for (const ent of this.state.entities) {

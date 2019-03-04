@@ -2,18 +2,26 @@ import { Entity } from "./entity";
 import { GameState } from "./state";
 import { Graphics } from "pixi.js";
 import { C } from "./constants";
+import { IPoint } from "./point";
 
 // TODO(bowei): make this an abstract class or something. maybe not though. not sure
 export class Monster extends Entity {
 
-  public health: number = 0;
+  static HEALTH_BAR_WIDTH = 30;
 
-  constructor(state: GameState) {
+  public maxHealth = 4;
+  public health = 4;
+
+  private graphicsHealthFull!: Graphics;
+  private graphicsHealthEmpty!: Graphics;
+
+  constructor(state: GameState, position: IPoint) {
     super({
       state,
       parent: state.app.stage,
-      mapX     : 5,
-      mapY     : 6,
+      // TODO(bowei): questionable
+      mapX     : position.x,
+      mapY     : position.y,
     });
 
     const graphics = new Graphics();
@@ -26,16 +34,30 @@ export class Monster extends Entity {
     graphics.y = 4;
 
     // health bar . TODO(bowei): wtf is this
-    const graphicsHealth = new Graphics();
-    graphicsHealth.beginFill(0xFF8080);
-    graphicsHealth.drawRect(0,0,30,2);
-    this.addChild(graphicsHealth);
-    graphicsHealth.x = 1;
-    graphicsHealth.y = 1;
+    this.graphicsHealthFull = new Graphics();
+    this.addChild(this.graphicsHealthFull);
+
+    this.graphicsHealthEmpty = new Graphics();
+    this.addChild(this.graphicsHealthEmpty);
+
+    this.renderHealth();
   }
 
   update() {
-      // update my position ??
+      // update my position ?? nahh
       let proposedX: number = this.mapX, proposedY: number = this.mapY;
+  }
+
+  renderHealth(): void {
+    this.graphicsHealthFull.beginFill(0xFF8080);
+    let width = Monster.HEALTH_BAR_WIDTH * ( this.health / this.maxHealth );
+    this.graphicsHealthFull.drawRect(0,0,Monster.HEALTH_BAR_WIDTH,2);
+    this.graphicsHealthFull.x = 1;
+    this.graphicsHealthFull.y = 1;
+
+    this.graphicsHealthEmpty.beginFill(0x808080);
+    this.graphicsHealthEmpty.drawRect(Monster.HEALTH_BAR_WIDTH,0,0,2);
+    this.graphicsHealthEmpty.x = 1;
+    this.graphicsHealthEmpty.y = 1;
   }
 }
