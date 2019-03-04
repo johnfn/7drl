@@ -58,8 +58,8 @@ export class Camera {
   }
 
   constructor() {
-    this.width  = C.SCREEN_WIDTH;
-    this.height = C.SCREEN_HEIGHT;
+    this.width  = C.GAME_WIDTH;
+    this.height = C.GAME_HEIGHT;
     this.desiredStageX = 0;
     this.desiredStageY = 0;
 
@@ -72,12 +72,12 @@ export class Camera {
   }
 
   update(state: GameState) {
-    const activeScreen = state.world.getActiveWorldScreen();
+    const activeRect = state.world.getActiveWorldScreen();
 
-    if (this.bounds.w !== activeScreen.pixelWidth || this.bounds.h !== activeScreen.pixelHeight) {
-      this.bounds = this.bounds
-        .withWidth(state.world.getActiveWorldScreen().pixelWidth)
-        .withHeight(state.world.getActiveWorldScreen().pixelHeight);
+    if (this.bounds !== activeRect) {
+      this.bounds = activeRect;
+
+      //console.log(this.bounds);
     }
  
     state.stage.x = this.desiredStageX;

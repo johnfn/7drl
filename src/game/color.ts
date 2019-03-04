@@ -40,9 +40,9 @@ export class Color {
   }
   
   toNumber(): number {
-    return Math.floor(this.red  ) << 16 +
-           Math.floor(this.green) <<  8 +
-           Math.floor(this.blue );
+    return (Math.floor(this.red)   << 16) +
+           (Math.floor(this.green) << 8 ) +
+           (Math.floor(this.blue )      );
   }
 }
 

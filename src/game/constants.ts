@@ -1,12 +1,17 @@
 export class C {
-  public static SCREEN_WIDTH  = 800;
-  public static SCREEN_HEIGHT = 600;
+  public static GAME_WIDTH  = 800;
+  public static GAME_HEIGHT = 600;
 
-  public static TILE_WIDTH  = 32;
-  public static TILE_HEIGHT = 32;
+  /**
+   * size of one screen on the map, in tiles.
+   */
+  public static SCREEN_SIZE_IN_TILES = 30;
 
-  public static WORLD_HEIGHT_IN_CELLS = 31;
-  public static WORLD_WIDTH_IN_CELLS  = 31;
+  public static MAP_SIZE_IN_TILES = 500;
+
+  public static TILE_SIZE = 32;
+
+  public static WORLD_SIZE_IN_CELLS = 31;
 
   public static CORE_ITEMS = [
     'shield', // used to light something on FIRE

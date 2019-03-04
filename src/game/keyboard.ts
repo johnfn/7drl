@@ -129,7 +129,7 @@ export class Keyboard {
           this.justDown[key] = true;
           this.whenDown[key] = tick;
         }
-        if (tick > this.whenDown[key] + 60) {
+        if (tick > this.whenDown[key] + 30) {
           this.delayedDown[key] = true;
         }
 

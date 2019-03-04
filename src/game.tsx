@@ -12,7 +12,6 @@ export class Game extends React.Component<{}, {}> {
   initialized = false;
   state      !: GameState;
   canvas      : HTMLCanvasElement | null = null;
-  tick        : number = 0;
 
   componentDidMount() {
     if (!this.initialized) {
@@ -26,8 +25,8 @@ export class Game extends React.Component<{}, {}> {
     if (!this.canvas) { return; }
 
     const app = new Application({
-      width          : C.SCREEN_WIDTH,
-      height         : C.SCREEN_HEIGHT,
+      width          : C.GAME_WIDTH,
+      height         : C.GAME_HEIGHT,
       backgroundColor: 0x1099bb,
       view           : this.canvas,
     });
@@ -44,9 +43,8 @@ export class Game extends React.Component<{}, {}> {
     this.state.camera = camera;
 
     this.state.world  = new World(this.state);
-    this.state.player = new Player(this.state);
-    // TODO(bowei): generate monsters procedurally!!!
-    //this.state.monsters = [ new Monster(this.state, {x: 7, y: 6}) ];
+    const playerInitialPosition = { x: 5, y: 5 };
+    this.state.player = new Player(this.state, playerInitialPosition);
     this.state.world.generateMonsters(this.state);
 
     window.requestAnimationFrame(() => this.gameLoop());
@@ -54,12 +52,11 @@ export class Game extends React.Component<{}, {}> {
 
   gameLoop() {
     this.state.camera.update(this.state);
-    this.state.keyboard.update(this.tick);
-    this.tick++;
+    this.state.keyboard.update(this.state.tick);
+    this.state.tick++;
 
     for (const ent of this.state.entities) {
       ent.baseUpdate();
-      ent.update();
     }
 
     window.requestAnimationFrame(() => this.gameLoop());

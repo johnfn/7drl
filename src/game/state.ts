@@ -1,5 +1,5 @@
 import { Application, Container } from "pixi.js";
-import { Entity } from "./entity";
+import { Entity, CombatEntity } from "./entity";
 import { World } from "./world";
 import { Player } from "./player";
 import { Keyboard } from "./keyboard";
@@ -14,8 +14,9 @@ export class GameState {
   public entities : Entity[];
   public world   !: World;
   public player  !: Player;
-  public monsters!: Monster[];
+  public monsters!: CombatEntity[];
   public camera  !: Camera;
+  public tick     : number = 0;
 
   constructor(props: {
     app     : Application;

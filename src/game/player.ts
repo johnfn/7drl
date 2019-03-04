@@ -1,31 +1,18 @@
-import { Entity } from "./entity";
+import { CombatEntity } from "./entity";
 import { GameState } from "./state";
 import { Graphics } from "pixi.js";
 import { C } from "./constants";
+import { IPoint } from "./point";
 
-export class Player extends Entity {
-  /**
-   * x position in the world map
-   */
-  worldX: number;
-
-  /**
-   * y position in the world map
-   */
-  worldY: number;
-
-  tick = 0;
-
-  constructor(state: GameState) {
+export class Player extends CombatEntity {
+  constructor(state: GameState, playerStart: IPoint) {
     super({
       state,
+      maxHealth: 20,
       parent: state.app.stage,
-      mapX     : 5,
-      mapY     : 5,
+      mapX     : playerStart.x,
+      mapY     : playerStart.y
     });
-
-    this.worldX = 0;
-    this.worldY = 0;
 
     const graphics = new Graphics();
     
@@ -34,46 +21,37 @@ export class Player extends Entity {
     this.addChild(graphics);
     graphics.x = 4;
     graphics.y = 4;
-
-    // health bar . TODO(bowei): wtf is this
-    const graphicsHealth = new Graphics();
-    graphicsHealth.beginFill(0xFF8080);
-    graphicsHealth.drawRect(0,0,30,2);
-    this.addChild(graphicsHealth);
-    graphicsHealth.x = 1;
-    graphicsHealth.y = 1;
   }
 
   update() {
     let proposedX: number = this.mapX, proposedY: number = this.mapY;
 
-    // TODO: this has a 1/10 chance of doubling your speed
-    const frameDelay = this.tick++ % 10 === 0;
-    if ((this.state.keyboard.down.H && frameDelay) || this.state.keyboard.justDown.H) {
+    const frameDelay = this.state.tick % 6 === 0; // 10 repeats per sec
+    if ((this.state.keyboard.delayedDown.H && frameDelay) || this.state.keyboard.justDown.H) {
       proposedX -= 1;
     }
-    if ((this.state.keyboard.down.L && frameDelay) || this.state.keyboard.justDown.L) {
+    if ((this.state.keyboard.delayedDown.L && frameDelay) || this.state.keyboard.justDown.L) {
       proposedX += 1;
     }
-    if ((this.state.keyboard.down.J && frameDelay) || this.state.keyboard.justDown.J) {
+    if ((this.state.keyboard.delayedDown.J && frameDelay) || this.state.keyboard.justDown.J) {
       proposedY += 1;
     }
-    if ((this.state.keyboard.down.K && frameDelay) || this.state.keyboard.justDown.K) {
+    if ((this.state.keyboard.delayedDown.K && frameDelay) || this.state.keyboard.justDown.K) {
       proposedY -= 1;
     }
-    if ((this.state.keyboard.down.Y && frameDelay) || this.state.keyboard.justDown.Y) {
+    if ((this.state.keyboard.delayedDown.Y && frameDelay) || this.state.keyboard.justDown.Y) {
       proposedX -= 1;
       proposedY -= 1;
     }
-    if ((this.state.keyboard.down.U && frameDelay) || this.state.keyboard.justDown.U) {
+    if ((this.state.keyboard.delayedDown.U && frameDelay) || this.state.keyboard.justDown.U) {
       proposedX += 1;
       proposedY -= 1;
     }
-    if ((this.state.keyboard.down.B && frameDelay) || this.state.keyboard.justDown.B) {
+    if ((this.state.keyboard.delayedDown.B && frameDelay) || this.state.keyboard.justDown.B) {
       proposedX -= 1;
       proposedY += 1;
     }
-    if ((this.state.keyboard.down.N && frameDelay) || this.state.keyboard.justDown.N) {
+    if ((this.state.keyboard.delayedDown.N && frameDelay) || this.state.keyboard.justDown.N) {
       proposedX += 1;
       proposedY += 1;
     }
@@ -84,15 +62,23 @@ export class Player extends Entity {
       // do combat: you hit him
       const target = maybeMonster;
       // TODO(bowei): what's our atk value?
-      target.health -= 1;
+      this.attack(target);
       target.renderHealth();
-      // dont worry about monster hitting you, that's in monster's update() call
+      // now monster should attack me back
+      target.attack(this);
+      this.renderHealth();
     } else {
       this.mapX = proposedX;
       this.mapY = proposedY;
     }
 
-    this.state.camera.setX(this.mapX * C.TILE_WIDTH - C.SCREEN_WIDTH / 2);
-    this.state.camera.setY(this.mapY * C.TILE_HEIGHT - C.SCREEN_HEIGHT / 2);
+    this.state.camera.setX(this.mapX * C.TILE_SIZE - C.GAME_WIDTH  / 2);
+    this.state.camera.setY(this.mapY * C.TILE_SIZE - C.GAME_HEIGHT / 2);
   }
+
+  attack(target: CombatEntity) {
+    target.health -= 1;
+  }
+
+  customDestroyLogic() { }
 }
