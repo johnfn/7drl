@@ -3,6 +3,7 @@ import { Entity } from "./entity";
 import { World } from "./world";
 import { Player } from "./player";
 import { Keyboard } from "./keyboard";
+import { Monster } from "./monster";
 
 export class GameState {
   public app      : Application;
@@ -11,6 +12,7 @@ export class GameState {
   public entities : Entity[];
   public world   !: World;
   public player  !: Player;
+  public monsters!: Monster[];
 
   constructor(props: {
     app     : Application;
