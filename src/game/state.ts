@@ -14,7 +14,6 @@ export class GameState {
   public entities : Entity[];
   public world   !: World;
   public player  !: Player;
-  public monsters!: CombatEntity[];
   public camera  !: Camera;
   public tick     : number = 0;
 
@@ -28,7 +27,11 @@ export class GameState {
     this.entities = [];
   }
 
+  getMonsters(): CombatEntity[] {
+    return this.entities.filter(e => e instanceof Monster) as Monster[];
+  }
+
   getMonsterAt(pos: IPoint): Monster | null {
-    return this.monsters.filter(m => (m.mapX == pos.x && m.mapY == pos.y))[0];
+    return this.getMonsters().filter(m => (m.mapX == pos.x && m.mapY == pos.y))[0];
   }
 }

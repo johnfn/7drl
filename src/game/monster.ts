@@ -1,7 +1,6 @@
 import { Entity, CombatEntity } from "./entity";
 import { GameState } from "./state";
 import { Graphics } from "pixi.js";
-import { C } from "./constants";
 import { IPoint } from "./point";
 
 // TODO(bowei): make this an abstract class or something. maybe not though. not sure
@@ -31,8 +30,10 @@ export class Monster extends CombatEntity {
   }
 
   update() {
-      // update my position ?? nahh
-      let proposedX: number = this.mapX, proposedY: number = this.mapY;
+    // update my position ?? nahh
+
+    let proposedX = this.mapX; 
+    let proposedY = this.mapY;
   }
 
   attack(target: CombatEntity) {
@@ -40,8 +41,5 @@ export class Monster extends CombatEntity {
     console.log('got here', target.health);
   }
 
-  customDestroyLogic() {
-    this.state.monsters = this.state.monsters.filter(other_m => other_m != this);
-  }
-
+  customDestroyLogic() { }
 }

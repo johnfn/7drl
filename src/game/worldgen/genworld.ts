@@ -1,4 +1,8 @@
 import { Util } from "../util";
+import { GridCell, Building } from "../world";
+import { Rect } from "../rect";
+import { addStartingCityChunk } from "./gentown";
+import { C } from "../constants";
 
 export type Level = 0 | 1 | 2 | 3 | 4 | "unset";
 
@@ -7,12 +11,13 @@ export type Chunk = {
   level : Level;
   x     : number;
   y     : number;
+  cells : GridCell[][];
   type  :
     | { name: "starting city" }
     | { name: "grassland" }
 }
 
-export function generateWorldChunks(size: number): Chunk[][] {
+export function genWorld(size: number): Chunk[][] {
   const heights = generateHeights(size);
   const chunks  = heights.map((row, i) => row.map((v, j) => {
     const chunk: Chunk = { 
@@ -21,6 +26,7 @@ export function generateWorldChunks(size: number): Chunk[][] {
       level : "unset",
       x     : i,
       y     : j,
+      cells : [],
     };
 
     return chunk;
@@ -33,6 +39,26 @@ export function generateWorldChunks(size: number): Chunk[][] {
   addChunksOfLevel(chunks, 4, 40);
 
   return chunks;
+}
+
+export function genChunkCells(chunk: Chunk): GridCell[][] {
+  const cells: GridCell[][] = [];
+
+  for (let i = 0; i < C.CHUNK_SIZE_IN_TILES; i++) {
+    cells[i] = [];
+
+    for (let j = 0; j < C.CHUNK_SIZE_IN_TILES; j++) {
+      cells[i][j] = { 
+        type: { name: "grass" },
+        height: chunk.height,
+        biome: "foo",
+        difficulty: 0,
+        unlockStage: 0,
+      };
+    }
+  }
+
+  return cells;
 }
 
 function generateHeights(size: number): number[][] {
@@ -118,18 +144,6 @@ function generateHeights(size: number): number[][] {
   }));
 
   return result;
-}
-
-function addStartingCityChunk(chunks: Chunk[][]): void {
-  const chunk = chunks[0][0];
-
-  chunks[0][0] = {
-    type: { name: "starting city" },
-    height: chunk.height,
-    level : 0,
-    x     : chunk.x,
-    y     : chunk.y,
-  };
 }
 
 function getNeighbors(x: number, y: number, chunks: Chunk[][]): Chunk[] {

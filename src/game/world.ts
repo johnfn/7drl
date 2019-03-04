@@ -1,22 +1,21 @@
 import { Entity } from "./entity";
 import { GameState } from "./state";
 import { Graphics } from "pixi.js";
-import { Util } from "./util";
 import { Rect } from "./rect";
 import { C } from "./constants";
 import { Monster } from "./monster";
 import { Color } from "./color";
 import { IPoint } from "./point";
-import { generateWorldChunks, Level, Chunk } from "./worldgen/genchunks";
+import { genWorld, Level, Chunk } from "./worldgen/genworld";
 
-type Building = { 
+export type Building = { 
   rect: Rect;
   type: "inn" | "house";
 };
 
 type Biome = "foo" | "bar";
 
-type GridCell = {
+export type GridCell = {
   height: number; // some abstract concept for generating non-boring cells
   biome: Biome; // what class/theme of monsters are generated?
   difficulty: number; // how hard the monsters are in there. correlated with level
@@ -35,6 +34,10 @@ type WorldMap = {
 
 export class World extends Entity {
   graphics: Graphics;
+
+  /**
+   * All of the data in the entire world
+   */
   map     : WorldMap;
   debug   : Graphics;
   chunks !: Chunk[][];
@@ -56,7 +59,7 @@ export class World extends Entity {
 
     this.map = this.generateMap();
     
-    this.drawWorldScreen(0, 0, 50, 50);
+    this.drawWorldScreen(0, 0);
     
     this.debugDraw();
   }
@@ -65,42 +68,42 @@ export class World extends Entity {
     const player = this.state.player;
 
     return new Rect({
-      x: Math.floor(player.mapX / C.SCREEN_SIZE_IN_TILES) * C.SCREEN_SIZE_IN_TILES * C.TILE_SIZE,
-      y: Math.floor(player.mapY / C.SCREEN_SIZE_IN_TILES) * C.SCREEN_SIZE_IN_TILES * C.TILE_SIZE,
-      w: C.SCREEN_SIZE_IN_TILES * C.TILE_SIZE,
-      h: C.SCREEN_SIZE_IN_TILES * C.TILE_SIZE
+      x: Math.floor(player.mapX / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      y: Math.floor(player.mapY / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      w: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      h: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE
     });
   }
 
   generateMap(): WorldMap {
+    this.chunks = genWorld(33);
+
     const worldMap: WorldMap = {
       cells: [],
     };
 
-    for (let i = 0; i < C.MAP_SIZE_IN_TILES; i++) {
-      worldMap.cells[i] = [];
+    // flatten chunks of cells into one huge 2d grid of all cells ever.
 
-      for (let j = 0; j < C.MAP_SIZE_IN_TILES; j++) {
-        worldMap.cells[i][j] = { 
-          type       : { name: "grass" },
-          // TODO(bowei): generate biomes please
-          biome      : "foo",
-          height     : 0.5,
-          // TODO(bowei): un-hardcode starting city here
-          difficulty : (i == 0 && j == 0) ? 0 : 1,
-          unlockStage: 0,
-        };
+    for (let i = 0; i < this.chunks.length; i++) {
+      for (let j = 0; j < this.chunks[i].length; j++) {
+        const cells = this.chunks[i][j].cells;
+
+        for (let k = 0; k < cells.length; k++) {
+          worldMap.cells[i * cells.length + k] = [];
+
+          for (let l = 0; l < cells.length; l++) {
+            worldMap.cells[i * cells.length + k][j * cells.length + l] = cells[k][l];
+          }
+        }
       }
     }
-
-    this.chunks = generateWorldChunks(33);
 
     return worldMap;
   }
 
   debugDraw(): void {
-    for (let i = 0; i < C.WORLD_SIZE_IN_CELLS; i += 1) {
-      for (let j = 0; j < C.WORLD_SIZE_IN_CELLS; j += 1) {
+    for (let i = 0; i < C.WORLD_SIZE_IN_SCREENS; i += 1) {
+      for (let j = 0; j < C.WORLD_SIZE_IN_SCREENS; j += 1) {
         const chunk = this.chunks[i][j];
         const h      = chunk.height;
 
@@ -121,92 +124,11 @@ export class World extends Entity {
     }
   }
 
-  /*
-  generateTown(x: number, y: number): WorldScreen {
-    // houses
-    // shops
-    // NPCs
-    // trees
-    // water (bridges?)
-    // paths
-    // cliffs???
-
-    const townHeightInCells = 50;
-    const townWidthInCells  = 50;
-    const numBuildings      = 3;
-
-    const map: GridCell[][] = [];
-
-    for (let i = 0; i < townHeightInCells; i++) {
-      map[i] = [];
-
-      for (let j = 0; j < townWidthInCells; j++) {
-        map[i][j] = { type: { name: "grass" } };
-      }
-    }
-
-    // generate some buildings
-
-    let buildings: Building[] = [];
-
-    for (let i = 0; i < numBuildings; i++) {
-      let tries = 0;
-
-      while (++tries < 100) {
-        const newBuilding: Building = {
-          rect: new Rect({
-            x   : Util.RandomRange(5, townWidthInCells - 5),
-            y   : Util.RandomRange(5, townHeightInCells - 5),
-            w   : 4,
-            h   : 2,
-          }),
-          type: "house",
-        };
-
-        for (const existingBuilding of buildings) {
-          if (existingBuilding.rect.intersects(existingBuilding.rect, { edgesOnlyIsAnIntersection: true })) {
-            continue;
-          }
-        }
-
-        buildings.push(newBuilding);
-        break;
-      }
-    }
-
-    // add buildings to map 
-
-    for (const building of buildings) {
-      for (let i = building.rect.left; i < building.rect.right; i++) {
-        for (let j = building.rect.top; j < building.rect.bottom; j++) {
-          map[i][j] = {
-            type    : "house",
-            building: building,
-          };
-        }
-      }
-    }
-
-    ////////////////////////////////////////////////////////////////////
-
-    return {
-      cellWidth  : townWidthInCells,
-      cellHeight : townHeightInCells,
-      pixelWidth : townWidthInCells * C.TILE_SIZE,
-      pixelHeight: townHeightInCells * C.TILE_HEIGHT,
-      worldX     : x,
-      worldY     : y,
-      height     : 0,
-      cells      : map,
-    };
-  }
-  */
-
-  drawWorldScreen(worldX: number, worldY: number, width = 50, height = 50): void {
+  drawWorldScreen(worldX: number, worldY: number): void {
     // draw town
 
-    for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
+    for (let i = 0; i < C.CHUNK_SIZE_IN_TILES; i++) {
+      for (let j = 0; j < C.CHUNK_SIZE_IN_TILES; j++) {
         const cell = this.map.cells[worldX + i][worldY + j];
         
         if (cell.type.name === "grass") {
@@ -225,10 +147,10 @@ export class World extends Entity {
   }
 
   generateMonsters(state: GameState): void {
-    state.monsters = [];
-    for (let i = 0 ; i < C.MAP_SIZE_IN_TILES; i++) {
-      for (let j = 0 ; j < C.MAP_SIZE_IN_TILES; j++) {
+    for (let i = 0 ; i < this.map.cells.length; i++) {
+      for (let j = 0 ; j < this.map.cells[i].length; j++) {
         let difficulty = this.map.cells[i][j].difficulty
+
         this.generateMonstersByCell(state, this.map.cells[i][j], {x: i , y: j} );
       }
     }
@@ -246,16 +168,20 @@ export class World extends Entity {
   }
 
   generateMonstersByCell(state: GameState, cell: GridCell, position: IPoint): void {
-    let monsterDensity = 1./80;
+    let monsterDensity = 1 / 80;
+
     if (cell.difficulty == 0) {
       monsterDensity = 0;
     }
+
     if (cell.type.name == 'water') {
       monsterDensity = 0;
     }
+
     if (Math.random() < monsterDensity) {
       // create a monster here
-      state.monsters.push(new Monster(state, position));
+
+      new Monster(state, position);
     }
   }
 
