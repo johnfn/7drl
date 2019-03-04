@@ -43,6 +43,10 @@ class KeyInfo {
   Spacebar: boolean = false;
 }
 
+class KeyInfoNumber {
+  [key: string] : number;
+}
+
 interface QueuedKeyboardEvent {
   isDown: boolean;
   event : KeyboardEvent;
@@ -58,6 +62,17 @@ export class Keyboard {
    * Is a key down AND pressed down in this frame?
    */
   public justDown = new KeyInfo();
+
+  /**
+   * Did we just press down really recently so we dont want to 
+   */
+  //private deadZoneDown = new KeyInfo();
+  private whenDown = new KeyInfoNumber();
+
+  /**
+   * Did we do the good thing
+   */
+  public delayedDown = new KeyInfo();
 
   private _queuedEvents: QueuedKeyboardEvent[] = [];
 
@@ -101,7 +116,7 @@ export class Keyboard {
     return str[0].toUpperCase() + str.slice(1);
   }
 
-  update(): void {
+  update(tick: number): void {
     for (const key of KeyInfo.Keys) {
       this.justDown[key] = false;
     }
@@ -112,11 +127,17 @@ export class Keyboard {
       if (queuedEvent.isDown) {
         if (!this.down[key]) {
           this.justDown[key] = true;
+          this.whenDown[key] = tick;
+        }
+        if (tick > this.whenDown[key] + 60) {
+          this.delayedDown[key] = true;
         }
 
         this.down[key]     = true;
       } else {
         this.down[key]     = false;
+        this.whenDown[key] = Infinity;
+        this.delayedDown[key] = false;
       }
     }
 

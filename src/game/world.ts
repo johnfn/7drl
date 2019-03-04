@@ -4,6 +4,8 @@ import { Graphics } from "pixi.js";
 import { Util } from "./util";
 import { Rect } from "./rect";
 import { C } from "./constants";
+import { Monster } from "./monster";
+import { Color } from "./color";
 
 type Building = { 
   rect: Rect;
@@ -15,7 +17,6 @@ type GridCell =
   | { type: "house", building: Building }
   | { type: "tree" }
   | { type: "water" }
-
 // TODO(bowei): maybe we don't want hard screen transitions
 
 /**
@@ -28,11 +29,12 @@ type WorldScreen = {
   pixelHeight: number;
   worldX     : number;
   worldY     : number;
+  height     : number;
   cells      : GridCell[][];
 }
 
 type WorldMap = {
-  cells: WorldScreen[][];
+  cells : WorldScreen[][];
 }
 
 export class World extends Entity {
@@ -52,6 +54,8 @@ export class World extends Entity {
     this.map = this.generateMap();
     
     this.drawWorldScreen(this.map.cells[0][0]);
+    
+    this.debugDraw();
   }
 
   getActiveWorldScreen(): WorldScreen {
@@ -61,11 +65,60 @@ export class World extends Entity {
   }
 
   generateMap(): WorldMap {
-    const town = this.generateTown(0, 0);
-
-    return {
-      cells: [[town]],
+    const worldMap: WorldMap = {
+      cells: [],
     };
+
+    for (let i = 0; i < 31; i++) {
+      worldMap.cells[i] = [];
+
+      for (let j = 0; j < 31; j++) {
+        const cells: GridCell[][] = [];
+
+        for (let k = 0; k < 50; k++) {
+          cells[k] = [];
+
+          for (let l = 0; l < 50; l++) {
+            cells[k][l] = { type: "grass" };
+          }
+        }
+
+        const screen: WorldScreen = {
+          cellWidth  : 50,
+          cellheight : 50,
+          pixelWidth : 50 * C.TILE_WIDTH,
+          pixelHeight: 50 * C.TILE_HEIGHT,
+          worldX: i,
+          worldY: j,
+          height: 0,
+          cells,
+        };
+
+        worldMap.cells[i][j] = screen; 
+      }
+    }
+
+    for (let i = 0; i < C.WORLD_HEIGHT_IN_CELLS; i += 1) {
+      for (let j = 0; j < C.WORLD_HEIGHT_IN_CELLS; j += 1) {
+        worldMap.cells[i][j].height = 0.9;
+      }
+    }
+
+    return worldMap;
+  }
+
+  debugDraw(): void {
+    for (let i = 0; i < C.WORLD_HEIGHT_IN_CELLS; i += 1) {
+      for (let j = 0; j < C.WORLD_HEIGHT_IN_CELLS; j += 1) {
+        const screen = this.map.cells[i][j];
+        const h = screen.height;
+
+        console.log(h);
+
+        this.graphics.beginFill(new Color(h * 255, h * 255, h * 255).toNumber());
+        this.graphics.drawRect(i * 2, j * 2, 2, 2);
+      }
+    }
   }
 
   generateTown(x: number, y: number): WorldScreen {
@@ -142,6 +195,7 @@ export class World extends Entity {
       pixelHeight: townHeightInCells * C.TILE_HEIGHT,
       worldX     : x,
       worldY     : y,
+      height     : 0,
       cells      : map,
     };
   }
@@ -165,6 +219,14 @@ export class World extends Entity {
 
         this.graphics.drawRect(i * 32, j * 32, 32, 32);
       }
+    }
+  }
+
+  generateMonsters(state: GameState): void {
+    // generate some random mosters
+    state.monsters = [];
+    for (let i = 0; i < Util.RandomRange(5, 20); i++) {
+      state.monsters.push(new Monster(state, {x: Util.RandomRange(0, 32), y: Util.RandomRange(0, 32)}));
     }
   }
 

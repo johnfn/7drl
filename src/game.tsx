@@ -12,6 +12,7 @@ export class Game extends React.Component<{}, {}> {
   initialized = false;
   state      !: GameState;
   canvas      : HTMLCanvasElement | null = null;
+  tick        : number = 0;
 
   componentDidMount() {
     if (!this.initialized) {
@@ -45,14 +46,16 @@ export class Game extends React.Component<{}, {}> {
     this.state.world  = new World(this.state);
     this.state.player = new Player(this.state);
     // TODO(bowei): generate monsters procedurally!!!
-    this.state.monsters = [ new Monster(this.state, {x: 5, y: 6}) ];
+    //this.state.monsters = [ new Monster(this.state, {x: 7, y: 6}) ];
+    this.state.world.generateMonsters(this.state);
 
     window.requestAnimationFrame(() => this.gameLoop());
   }
 
   gameLoop() {
     this.state.camera.update(this.state);
-    this.state.keyboard.update();
+    this.state.keyboard.update(this.tick);
+    this.tick++;
 
     for (const ent of this.state.entities) {
       ent.baseUpdate();

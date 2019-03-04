@@ -5,6 +5,7 @@ import { Player } from "./player";
 import { Keyboard } from "./keyboard";
 import { Monster } from "./monster";
 import { Camera } from "./camera";
+import { IPoint } from "./point";
 
 export class GameState {
   public app      : Application;
@@ -24,5 +25,9 @@ export class GameState {
     this.keyboard = props.keyboard;
     this.stage    = this.app.stage;
     this.entities = [];
+  }
+
+  getMonsterAt(pos: IPoint): Monster | null {
+    return this.monsters.filter(m => (m.mapX == pos.x && m.mapY == pos.y))[0];
   }
 }

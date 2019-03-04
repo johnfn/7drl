@@ -49,15 +49,20 @@ export class Monster extends Entity {
   }
 
   renderHealth(): void {
+    if (this.health <= 0) {
+      this.parent.removeChild(this);
+      this.state.monsters = this.state.monsters.filter(other_m => other_m != this);
+    }
     this.graphicsHealthFull.beginFill(0xFF8080);
     let width = Monster.HEALTH_BAR_WIDTH * ( this.health / this.maxHealth );
-    this.graphicsHealthFull.drawRect(0,0,Monster.HEALTH_BAR_WIDTH,2);
+    this.graphicsHealthFull.drawRect(0,0,width,2);
     this.graphicsHealthFull.x = 1;
     this.graphicsHealthFull.y = 1;
 
-    this.graphicsHealthEmpty.beginFill(0x808080);
-    this.graphicsHealthEmpty.drawRect(Monster.HEALTH_BAR_WIDTH,0,0,2);
+    this.graphicsHealthEmpty.beginFill(0x202020);
+    this.graphicsHealthEmpty.drawRect(width,0,Monster.HEALTH_BAR_WIDTH - width,2);
     this.graphicsHealthEmpty.x = 1;
     this.graphicsHealthEmpty.y = 1;
   }
+
 }

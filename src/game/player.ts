@@ -79,12 +79,12 @@ export class Player extends Entity {
     }
 
     // check if monster is occupying this tile
-    if (proposedY === 6 && proposedX === 5) {
+    let maybeMonster = this.state.getMonsterAt({x: proposedX, y: proposedY});
+    if (maybeMonster) {
       // do combat: you hit him
-      const target = this.state.monsters[0];
+      const target = maybeMonster;
       // TODO(bowei): what's our atk value?
       target.health -= 1;
-      //target.rerenderHealth({ damage: -1 });
       target.renderHealth();
       // dont worry about monster hitting you, that's in monster's update() call
     } else {
