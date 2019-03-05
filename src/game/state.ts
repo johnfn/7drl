@@ -3,7 +3,7 @@ import { Entity, CombatEntity } from "./entity";
 import { World } from "./world";
 import { Player } from "./player";
 import { Keyboard } from "./keyboard";
-import { Monster } from "./monster";
+import { Monster } from "./monsters/monster";
 import { Camera } from "./camera";
 import { IPoint } from "./point";
 

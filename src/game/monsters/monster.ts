@@ -1,7 +1,7 @@
-import { Entity, CombatEntity } from "./entity";
-import { GameState } from "./state";
+import { Entity, CombatEntity } from "../entity";
+import { GameState } from "../state";
 import { Graphics } from "pixi.js";
-import { IPoint } from "./point";
+import { IPoint } from "../point";
 
 // TODO(bowei): make this an abstract class or something. maybe not though. not sure
 // monster qualities: some default qualities

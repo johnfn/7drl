@@ -3,7 +3,7 @@ import { GameState } from "./state";
 import { Graphics } from "pixi.js";
 import { Rect } from "./rect";
 import { C } from "./constants";
-import { Monster } from "./monster";
+import { Monster } from "./monsters/monster";
 import { Color } from "./color";
 import { IPoint } from "./point";
 import { genWorld, Level, Chunk } from "./worldgen/genworld";
