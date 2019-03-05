@@ -5,7 +5,6 @@ import { GameState } from './game/state';
 import { C } from './game/constants';
 import { Player } from './game/player';
 import { Keyboard } from './game/keyboard';
-import { Monster } from './game/monster';
 import { Camera } from './game/camera';
 
 export class Game extends React.Component<{}, {}> {
