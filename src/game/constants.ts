@@ -28,10 +28,10 @@ export class C {
   public static WORLD_SIZE_IN_SCREENS = 31;
 
   public static CORE_ITEMS = [
-    'shield', // used to light something on FIRE
-    //'earth', // use a giant metal spoon for cooking. also can dig a hole or something
-    //'water', // flippers? alternatively, watering can?
-    'hookshot' // associated with AIR ? 
+    'shield', // used to light something on FIRE. also can block attacks. also can fry eggs
+    'gauntlets', // gives a strength boost in combat. also can be used to climb cliffs. also useful in powderizing some materials.
+    'helmet', // iron helmet which gives head protection. also used as a bucket to carry water. also can milk cows.
+    'hookshot' // used to fly across some areas. also can move enemies towards you. also can harpoon fish.
     // --- planned for future release --- //
     // 'tutorial' // 'navi' // some annoying pixie that gives you hints like what items you should use
     // 'enemies' // 'time-turner' // undo one move
