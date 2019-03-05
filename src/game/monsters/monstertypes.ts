@@ -1,3 +1,5 @@
+import { Graphics } from "pixi.js";
+
 // TODO(bowei): make this an abstract class or something. maybe not though. not sure
 // monster qualities: some default qualities
 // (move speed, attack damage, number of attacks, hp, exp, drops)
@@ -24,6 +26,51 @@
 // Wild goose       (flocking, mean/mean)
 // Wolf             (flocking, dangerous, mean/mean) // dangerous
 
-export class MON_C {
+export type MONSTER_STATE = "idle" | "aggro";
+export type MONSTER_MOVEMENT_AI = "sessile" | "cowardly" | "wandering" | "mean" | "patrolling"
+export type MONSTER_ADJECTIVES = "fast" | "flying" | "flocking"
 
+export type Species = {
+    behavior: {[K in MONSTER_STATE]?:  MONSTER_MOVEMENT_AI},
+    baseAttack: number,
+    baseMaxHealth: number,
+    baseExp: number,
+    // TODO(bowei): implement item AND money drops
+    //drops: number,
+    // TODO(bowei): procedurally generate this name? so make like "rabbitdogs" and like "batcats"
+    // that way the meat they drop can also be randomized. so we can have randomized recipes. for randomized crafting.
+    // TODO(bowei): alternatively just have drops be immediately usable and randomized effects per tier.
+    shortName: string,
+    longName?: string,
+    createGraphics: () => Graphics
 };
+
+function coloredSquareGenerator(colorCode: number) {
+  return () => {
+    const graphics = new Graphics();
+    graphics.beginFill(colorCode);
+    graphics.drawRect(0, 0, 24, 24);
+    graphics.x = 4;
+    graphics.y = 4;
+    return graphics;
+  }
+}
+
+export class MONSTER_CLASSES {
+  public static scarecrow_0: Species = {
+    behavior: {"idle": "sessile", "aggro": "sessile"},
+    baseAttack: 0,
+    baseMaxHealth: 3,
+    baseExp: 1,
+    shortName: 'Old Scarecrow',
+    createGraphics: coloredSquareGenerator(0xFF00FF)
+  };
+  public static scarecrow_1: Species = {
+    behavior: {"idle": "sessile", "aggro": "sessile"},
+    baseAttack: 1,
+    baseMaxHealth: 3,
+    baseExp: 0,
+    shortName: 'Training Dummy',
+    createGraphics: coloredSquareGenerator(0x8F80FF)
+  };
+}

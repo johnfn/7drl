@@ -3,7 +3,7 @@ import { Application } from 'pixi.js';
 import { World } from './game/world';
 import { GameState } from './game/state';
 import { C } from './game/constants';
-import { Player } from './game/player';
+import { Player } from './game/player/player';
 import { Keyboard } from './game/keyboard';
 import { Camera } from './game/camera';
 

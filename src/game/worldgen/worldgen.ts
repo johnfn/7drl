@@ -1,10 +1,51 @@
 import { Util } from "../util";
-import { GridCell, Building } from "../world";
-import { Rect } from "../rect";
-import { addStartingCityChunk } from "./gentown";
+import { addStartingCityChunk } from "./towngen";
 import { C } from "../constants";
+import { Rect } from "../rect";
 
 export type Level = 0 | 1 | 2 | 3 | 4 | "unset";
+
+export type Building = { 
+  rect: Rect;
+  type: "inn" | "house";
+};
+
+export type Biome = "foo" | "bar";
+
+export type GridCell = {
+  /** 
+   * number from 0-1; adjacent cells will have similar height. could potentially
+   * be used to calculate biome
+   */
+  height: number;
+
+  /**
+   * what class/theme of monsters are generated?
+   */
+  biome: Biome;
+
+  /**
+   * how hard the monsters are in there. correlated with level
+   */
+  difficulty: number;
+
+  /**
+   * how many key items are needed
+   */
+  unlockStage: Level;
+
+  /**
+   * Is this cell impassable?
+   */
+  isWall: boolean;
+
+  type: 
+    | { name: "grass" }
+    | { name: "house", building: Building }
+    | { name: "housemat", building: Building }
+    | { name: "tree" }
+    | { name: "water" };
+}
 
 export type Chunk = {
   height: number;
@@ -49,11 +90,12 @@ export function genChunkCells(chunk: Chunk): GridCell[][] {
 
     for (let j = 0; j < C.CHUNK_SIZE_IN_TILES; j++) {
       cells[i][j] = { 
-        type: { name: "grass" },
-        height: chunk.height,
-        biome: "foo",
-        difficulty: 0,
+        type       : { name: "grass" },
+        height     : chunk.height,
+        biome      : "foo",
+        difficulty : 0,
         unlockStage: 0,
+        isWall     : false,
       };
     }
   }

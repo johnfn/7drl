@@ -4,28 +4,12 @@ import { Graphics } from "pixi.js";
 import { Rect } from "./rect";
 import { C } from "./constants";
 import { Monster } from "./monsters/monster";
+import { MONSTER_CLASSES } from "./monsters/monstertypes";
 import { Color } from "./color";
 import { IPoint } from "./point";
-import { genWorld, Level, Chunk } from "./worldgen/genworld";
+import { genWorld, Level, Chunk, GridCell } from "./worldgen/worldgen";
+import { Util } from "./util";
 
-export type Building = { 
-  rect: Rect;
-  type: "inn" | "house";
-};
-
-type Biome = "foo" | "bar";
-
-export type GridCell = {
-  height: number; // some abstract concept for generating non-boring cells
-  biome: Biome; // what class/theme of monsters are generated?
-  difficulty: number; // how hard the monsters are in there. correlated with level
-  unlockStage: Level;  // how many key items are needed
-  type: 
-    | { name: "grass" }
-    | { name: "house", building: Building }
-    | { name: "tree" }
-    | { name: "water" };
-}
 // TODO(bowei): maybe we don't want hard screen transitions
 
 type WorldMap = {
@@ -68,8 +52,8 @@ export class World extends Entity {
     const player = this.state.player;
 
     return new Rect({
-      x: Math.floor(player.mapX / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
-      y: Math.floor(player.mapY / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      x: Math.floor(player.worldX / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      y: Math.floor(player.worldY / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
       w: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
       h: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE
     });
@@ -135,15 +119,41 @@ export class World extends Entity {
           this.graphics.beginFill(0x00ff00);
         } else if (cell.type.name === "house") {
           this.graphics.beginFill(0x000000);
+        } else if (cell.type.name === "housemat") {
+          this.graphics.beginFill(0xcccccc);
         } else if (cell.type.name === "tree") {
           this.graphics.beginFill(0x99ff99);
         } else if (cell.type.name === "water") {
           this.graphics.beginFill(0x0000ff);
+        } else {
+          Util.AssertNever(cell.type)
         }
 
         this.graphics.drawRect(i * 32, j * 32, 32, 32);
       }
     }
+  }
+
+  isAWall(worldX: number, worldY: number): boolean {
+    const cell = this.map.cells[worldX][worldY];
+
+    if (cell.type.name === "grass") {
+      return false;
+    } else if (cell.type.name === "house") {
+      return true;
+    } else if (cell.type.name === "housemat") {
+      return false;
+    } else if (cell.type.name === "tree") {
+      return true;
+    } else if (cell.type.name === "water") {
+      return true;
+    } else {
+      return Util.AssertNever(cell.type);
+    }
+  }
+
+  getCellAt(worldX: number, worldY: number): GridCell {
+    return this.map.cells[worldX][worldY];
   }
 
   generateMonsters(state: GameState): void {
@@ -170,18 +180,22 @@ export class World extends Entity {
   generateMonstersByCell(state: GameState, cell: GridCell, position: IPoint): void {
     let monsterDensity = 1 / 80;
 
-    if (cell.difficulty == 0) {
-      monsterDensity = 0;
-    }
+    //if (cell.difficulty == 0) {
+    //  monsterDensity = 0;
+    //}
 
-    if (cell.type.name == 'water') {
-      monsterDensity = 0;
-    }
+    //if (cell.type.name == 'water') {
+    //  monsterDensity = 0;
+    //}
 
     if (Math.random() < monsterDensity) {
       // create a monster here
 
-      new Monster(state, position);
+      if (Math.random() < 0.5) {
+        new Monster({state, position, species: MONSTER_CLASSES.scarecrow_0 });
+      } else {
+        new Monster({state, position, species: MONSTER_CLASSES.scarecrow_1 });
+      }
     }
   }
 
@@ -193,3 +207,4 @@ export class World extends Entity {
 
   customDestroyLogic() { }
 }
+ 

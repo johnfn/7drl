@@ -4,20 +4,20 @@ import { GameState } from "./state";
 import { C } from "./constants";
 
 export abstract class Entity extends Container {
-  state: GameState;
-  mapX : number;
-  mapY : number;
+  state : GameState;
+  worldX: number;
+  worldY: number;
 
   constructor(props: {
-    state : GameState;
-    parent: Container;
-    mapX ?: number;
-    mapY ?: number;
+    state   : GameState;
+    parent  : Container;
+    worldX ?: number;
+    worldY ?: number;
   }) {
     super();
 
-    this.mapX = props.mapX || 0;
-    this.mapY = props.mapY || 0;
+    this.worldX = props.worldX || 0;
+    this.worldY = props.worldY || 0;
 
     this.state = props.state;
     props.parent.addChild(this);
@@ -27,8 +27,8 @@ export abstract class Entity extends Container {
   abstract update(): void;
 
   baseUpdate(): void {
-    this.x = this.mapX * C.TILE_SIZE;
-    this.y = this.mapY * C.TILE_SIZE;
+    this.x = this.worldX * C.TILE_SIZE;
+    this.y = this.worldY * C.TILE_SIZE;
 
     this.update();
   }
@@ -57,8 +57,8 @@ export abstract class CombatEntity extends Entity {
     state : GameState;
     parent: Container;
     maxHealth: number;
-    mapX ?: number;
-    mapY ?: number;
+    worldX ?: number;
+    worldY ?: number;
   }) {
     super(props);
 
@@ -72,13 +72,10 @@ export abstract class CombatEntity extends Entity {
     this.graphicsHealthEmpty = new Graphics();
     this.addChild(this.graphicsHealthEmpty);
 
-    this.renderHealth({ initialize: true });
+    this.renderHealth();
   }
 
-  renderHealth(props?: {initialize: true}): void {
-    if (props && props.initialize) {
-      this.health = this.maxHealth;
-    }
+  renderHealth(): void {
     if (this.health <= 0) {
       this.destroy();
     }
@@ -99,6 +96,5 @@ export abstract class CombatEntity extends Entity {
 
   abstract customDestroyLogic(): void;
 
-  // compute attack value
-  abstract attack(e: CombatEntity): void;
+  abstract attack(target: CombatEntity): void;
 }

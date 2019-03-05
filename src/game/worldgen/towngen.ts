@@ -1,5 +1,4 @@
-import { Chunk, genChunkCells as genEmptyChunkCells } from "./genworld";
-import { GridCell, Building } from "../world";
+import { Chunk, genChunkCells as genEmptyChunkCells, Building } from "./worldgen";
 import { Rect } from "../rect";
 import { Util } from "../util";
 import { C } from "../constants";
@@ -31,7 +30,7 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
     while (++tries < 100) {
       const newBuilding: Building = {
         rect: new Rect({
-          x   : Util.RandomRange(5, townWidthInCells - 5),
+          x   : Util.RandomRange(5, townWidthInCells  - 5),
           y   : Util.RandomRange(5, townHeightInCells - 5),
           w   : 4,
           h   : 2,
@@ -61,9 +60,28 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
           biome      : "foo",
           difficulty : 0,
           unlockStage: 0,
+          isWall     : true,
         };
       }
     }
+
+    cells[building.rect.left + 1][building.rect.bottom] = {
+      type       : { name: "housemat", building },
+      height     : chunk.height,
+      biome      : "foo",
+      isWall     : false,
+      difficulty : 0,
+      unlockStage: 0,
+    };
+
+    cells[building.rect.left + 2][building.rect.bottom] = {
+      type       : { name: "housemat", building },
+      height     : chunk.height,
+      biome      : "foo",
+      difficulty : 0,
+      unlockStage: 0,
+      isWall     : false,
+    };
   }
 
   chunks[0][0] = {

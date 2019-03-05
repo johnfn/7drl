@@ -1,7 +1,7 @@
 import { Application, Container } from "pixi.js";
 import { Entity, CombatEntity } from "./entity";
 import { World } from "./world";
-import { Player } from "./player";
+import { Player } from "./player/player";
 import { Keyboard } from "./keyboard";
 import { Monster } from "./monsters/monster";
 import { Camera } from "./camera";
@@ -27,11 +27,11 @@ export class GameState {
     this.entities = [];
   }
 
-  getMonsters(): CombatEntity[] {
+  getMonsters(): Monster[] {
     return this.entities.filter(e => e instanceof Monster) as Monster[];
   }
 
   getMonsterAt(pos: IPoint): Monster | null {
-    return this.getMonsters().filter(m => (m.mapX == pos.x && m.mapY == pos.y))[0];
+    return this.getMonsters().filter(m => (m.worldX == pos.x && m.worldY == pos.y))[0];
   }
 }

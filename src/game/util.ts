@@ -18,4 +18,8 @@ export class Util {
 
     return result;
   }
+
+  public static AssertNever(x: never): never {
+    throw new Error("Unexpected object: " + x);
+  }
 }
