@@ -2,6 +2,73 @@ import { Chunk, genChunkCells as genEmptyChunkCells, Building } from "./worldgen
 import { Rect } from "../rect";
 import { Util } from "../util";
 import { C } from "../constants";
+import { Point } from "../point";
+import { GoodMap } from "../util/goodmap";
+
+type PointAndDistance = {
+  point: Point;
+  distance: number;
+}
+
+function getNeighboringPoints(point: Point, chunk: Chunk): Point[] {
+  return [
+    [ 1,  0],
+    [-1,  0],
+    [ 0,  1],
+    [ 0, -1],
+  ].map(([dx, dy]) => 
+    new Point({ x: point.x + dx, y: point.y + dy })
+  ).filter(point => chunk.rect.contains(point))
+}
+
+// TODO improve to use A*
+export function pathfind(start: Point, stop: Point, chunk: Chunk): Point[] {
+  const prev = new GoodMap<Point, PointAndDistance | null>();
+  let edge: PointAndDistance[] = [{ point: start, distance: 0 }];
+
+  prev.set(start, null);
+
+  while (edge.length > 0) {
+    edge = edge.sort((a, b) => b.point.taxicabDistance(stop) - a.point.taxicabDistance(stop));
+
+    const current = edge.pop()!;
+
+    if (current.point.x === stop.x && current.point.y === stop.y) { break; }
+
+    const neighbors = getNeighboringPoints(current.point, chunk);
+
+    for (const next of neighbors) {
+      // const cell = chunk.cells[next.x][next.y];
+      // if (cell.isWall) { continue; }
+
+      if (!prev.has(next)) {
+        edge.push({ point: next, distance: current.distance + 1 });
+      }
+
+      if (
+        !prev.has(next) ||
+        (prev.has(next) && prev.get(next) !== null && prev.get(next)!.distance > current.distance + 1)
+      ) {
+        prev.set(next, current);
+      }
+    }
+  }
+
+  const path = [];
+  let currentPointInPath = stop;
+
+  while (true) {
+    path.push(currentPointInPath);
+
+    if (prev.get(currentPointInPath) !== null) {
+      currentPointInPath = prev.get(currentPointInPath)!.point;
+    } else {
+      break;
+    }
+  }
+
+  return path;
+}
 
 export function addStartingCityChunk(chunks: Chunk[][]): void {
   const chunk = chunks[0][0];
@@ -84,6 +151,38 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
     };
   }
 
+  // add a path (mostly for aesthetics)
+
+  let pathPoints: Point[] = [
+    new Point({ x: Math.floor(C.CHUNK_SIZE_IN_TILES / 2) , y: 0 }),
+    new Point({ x: Math.floor(C.CHUNK_SIZE_IN_TILES / 2) , y: C.CHUNK_SIZE_IN_TILES - 1 }),
+    ...buildings.map(building => new Point({ 
+      x: building.rect.x + 2, 
+      y: building.rect.bottom + 1,
+    })),
+  ];
+
+  pathPoints = pathPoints.filter(p => chunk.rect.contains(p));
+
+  const line = [
+    ...pathfind(pathPoints[0], pathPoints[1], chunk),
+    ...pathfind(pathPoints[0], pathPoints[2], chunk),
+    ...pathfind(pathPoints[0], pathPoints[3], chunk),
+  ]
+
+  console.log(line);
+
+  for (const p of line) {
+    cells[p.x][p.y] = {
+      type       : { name: "path" },
+      height     : chunk.height,
+      biome      : "foo",
+      difficulty : 0,
+      unlockStage: 0,
+      isWall     : false,
+    };
+  }
+
   chunks[0][0] = {
     type: { name: "starting city" },
     height: chunk.height,
@@ -91,5 +190,6 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
     x     : chunk.x,
     y     : chunk.y,
     cells : cells,
+    rect  : chunk.rect,
   };
 }

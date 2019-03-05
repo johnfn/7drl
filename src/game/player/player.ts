@@ -29,46 +29,46 @@ export class Player extends CombatEntity {
   }
 
   getMovementDeltas(): { x: number, y: number } {
-    const delta: { x: number, y: number } = { x: 0, y: 0 };
+    const deltas: { x: number, y: number } = { x: 0, y: 0 };
     const frameDelay = this.state.tick % 6 === 0; // 10 repeats per sec
 
     if ((this.state.keyboard.delayedDown.H && frameDelay) || this.state.keyboard.justDown.H) {
-      delta.x -= 1;
+      deltas.x -= 1;
     }
 
     if ((this.state.keyboard.delayedDown.L && frameDelay) || this.state.keyboard.justDown.L) {
-      delta.x += 1;
+      deltas.x += 1;
     }
 
     if ((this.state.keyboard.delayedDown.J && frameDelay) || this.state.keyboard.justDown.J) {
-      delta.y += 1;
+      deltas.y += 1;
     }
 
     if ((this.state.keyboard.delayedDown.K && frameDelay) || this.state.keyboard.justDown.K) {
-      delta.y -= 1;
+      deltas.y -= 1;
     }
 
     if ((this.state.keyboard.delayedDown.Y && frameDelay) || this.state.keyboard.justDown.Y) {
-      delta.x -= 1;
-      delta.y -= 1;
+      deltas.x -= 1;
+      deltas.y -= 1;
     }
 
     if ((this.state.keyboard.delayedDown.U && frameDelay) || this.state.keyboard.justDown.U) {
-      delta.x += 1;
-      delta.y -= 1;
+      deltas.x += 1;
+      deltas.y -= 1;
     }
 
     if ((this.state.keyboard.delayedDown.B && frameDelay) || this.state.keyboard.justDown.B) {
-      delta.x -= 1;
-      delta.y += 1;
+      deltas.x -= 1;
+      deltas.y += 1;
     }
 
     if ((this.state.keyboard.delayedDown.N && frameDelay) || this.state.keyboard.justDown.N) {
-      delta.x += 1;
-      delta.y += 1;
+      deltas.x += 1;
+      deltas.y += 1;
     }
 
-    return delta;
+    return deltas;
   }
 
   update() {

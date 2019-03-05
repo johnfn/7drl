@@ -50,6 +50,10 @@ export class Point {
     });
   }
 
+  taxicabDistance(p: Point): number {
+    return Math.abs(p.x - this.x) + Math.abs(p.y - this.y);
+  }
+
   translate(p: { x: number, y: number }): Point {
     return new Point({
       x: this.x + p.x,

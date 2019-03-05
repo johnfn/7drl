@@ -43,6 +43,7 @@ export type GridCell = {
     | { name: "grass" }
     | { name: "house", building: Building }
     | { name: "housemat", building: Building }
+    | { name: "path" }
     | { name: "tree" }
     | { name: "water" };
 }
@@ -53,6 +54,7 @@ export type Chunk = {
   x     : number;
   y     : number;
   cells : GridCell[][];
+  rect  : Rect;
   type  :
     | { name: "starting city" }
     | { name: "grassland" }
@@ -67,6 +69,7 @@ export function genWorld(size: number): Chunk[][] {
       level : "unset",
       x     : i,
       y     : j,
+      rect  : new Rect({ x: i, y: j, w: size - 1, h: size - 1 }),
       cells : [],
     };
 
@@ -188,7 +191,7 @@ function generateHeights(size: number): number[][] {
   return result;
 }
 
-function getNeighbors(x: number, y: number, chunks: Chunk[][]): Chunk[] {
+function getNeighboringChunks(x: number, y: number, chunks: Chunk[][]): Chunk[] {
   const dxdy = [
     [ 0,  1],
     [ 0, -1],
@@ -214,7 +217,7 @@ function addChunksOfLevel(chunks: Chunk[][], newLevel: Level, count: number): vo
   const prevLevelChunks = Util.Flatten(chunks).filter(c => c.level === (newLevel as number - 1) );
 
   const seen = new Set<Chunk>();
-  let   edge = Util.Flatten(prevLevelChunks.map(chunk => getNeighbors(chunk.x, chunk.y, chunks)));
+  let   edge = Util.Flatten(prevLevelChunks.map(chunk => getNeighboringChunks(chunk.x, chunk.y, chunks)));
   const newChunks: Chunk[] = [];
 
   while (newChunks.length < count) {
@@ -226,7 +229,7 @@ function addChunksOfLevel(chunks: Chunk[][], newLevel: Level, count: number): vo
       seen.add(next);
       newChunks.push(next);
 
-      edge = [...edge, ...getNeighbors(next.x, next.y, chunks)];
+      edge = [...edge, ...getNeighboringChunks(next.x, next.y, chunks)];
     }
   }
 

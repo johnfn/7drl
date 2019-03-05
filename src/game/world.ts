@@ -125,6 +125,8 @@ export class World extends Entity {
           this.graphics.beginFill(0x99ff99);
         } else if (cell.type.name === "water") {
           this.graphics.beginFill(0x0000ff);
+        } else if (cell.type.name === "path") {
+          this.graphics.beginFill(0xbbbb66);
         } else {
           Util.AssertNever(cell.type)
         }
@@ -135,21 +137,7 @@ export class World extends Entity {
   }
 
   isAWall(worldX: number, worldY: number): boolean {
-    const cell = this.map.cells[worldX][worldY];
-
-    if (cell.type.name === "grass") {
-      return false;
-    } else if (cell.type.name === "house") {
-      return true;
-    } else if (cell.type.name === "housemat") {
-      return false;
-    } else if (cell.type.name === "tree") {
-      return true;
-    } else if (cell.type.name === "water") {
-      return true;
-    } else {
-      return Util.AssertNever(cell.type);
-    }
+    return this.map.cells[worldX][worldY].isWall;
   }
 
   getCellAt(worldX: number, worldY: number): GridCell {

@@ -238,7 +238,6 @@ export class Rect {
     return undefined;
   }
 
-  // Wand selecting diagonal pixels downwards depends on this
   contains(p: Point): boolean {
     return p.x >= this.x && p.x < this.x + this.w &&
            p.y >= this.y && p.y < this.y + this.h;
