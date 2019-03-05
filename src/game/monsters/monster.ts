@@ -1,4 +1,4 @@
-import { Entity, CombatEntity } from "../entity";
+import { CombatEntity } from "../combatentity";
 import { GameState } from "../state";
 import { Graphics } from "pixi.js";
 import { IPoint } from "../point";
