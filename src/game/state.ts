@@ -1,5 +1,5 @@
 import { Application, Container } from "pixi.js";
-import { Entity, CombatEntity } from "./entity";
+import { Entity } from "./entity";
 import { World } from "./world";
 import { Player } from "./player/player";
 import { Keyboard } from "./keyboard";
