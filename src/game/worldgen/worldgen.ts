@@ -69,7 +69,7 @@ export function genWorld(size: number): Chunk[][] {
       level : "unset",
       x     : i,
       y     : j,
-      rect  : new Rect({ x: i, y: j, w: size - 1, h: size - 1 }),
+      rect  : new Rect({ x: i, y: j, w: C.CHUNK_SIZE_IN_TILES, h: C.CHUNK_SIZE_IN_TILES }),
       cells : [],
     };
 

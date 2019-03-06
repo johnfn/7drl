@@ -1,4 +1,4 @@
-import { Chunk, genChunkCells as genEmptyChunkCells, Building } from "./worldgen";
+import { Chunk, genChunkCells as genEmptyChunkCells, Building, GridCell } from "./worldgen";
 import { Rect } from "../rect";
 import { Util } from "../util";
 import { C } from "../constants";
@@ -22,24 +22,26 @@ function getNeighboringPoints(point: Point, chunk: Chunk): Point[] {
 }
 
 // TODO improve to use A*
-export function pathfind(start: Point, stop: Point, chunk: Chunk): Point[] {
+export function pathfind(start: Point, stop: Point, chunk: Chunk, isCollision: (cell: GridCell) => boolean): Point[] {
   const prev = new GoodMap<Point, PointAndDistance | null>();
   let edge: PointAndDistance[] = [{ point: start, distance: 0 }];
 
   prev.set(start, null);
+
+  let found = false;
 
   while (edge.length > 0) {
     edge = edge.sort((a, b) => b.point.taxicabDistance(stop) - a.point.taxicabDistance(stop));
 
     const current = edge.pop()!;
 
-    if (current.point.x === stop.x && current.point.y === stop.y) { break; }
+    if (current.point.x === stop.x && current.point.y === stop.y) { found = true; break; }
 
     const neighbors = getNeighboringPoints(current.point, chunk);
 
     for (const next of neighbors) {
-      // const cell = chunk.cells[next.x][next.y];
-      // if (cell.isWall) { continue; }
+      const cell = chunk.cells[next.x][next.y];
+      if (isCollision(cell)) { continue; }
 
       if (!prev.has(next)) {
         edge.push({ point: next, distance: current.distance + 1 });
@@ -57,13 +59,15 @@ export function pathfind(start: Point, stop: Point, chunk: Chunk): Point[] {
   const path = [];
   let currentPointInPath = stop;
 
-  while (true) {
-    path.push(currentPointInPath);
+  if (found) {
+    while (true) {
+      path.push(currentPointInPath);
 
-    if (prev.get(currentPointInPath) !== null) {
-      currentPointInPath = prev.get(currentPointInPath)!.point;
-    } else {
-      break;
+      if (prev.get(currentPointInPath) !== null) {
+        currentPointInPath = prev.get(currentPointInPath)!.point;
+      } else {
+        break;
+      }
     }
   }
 
@@ -85,7 +89,7 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
   const townWidthInCells  = C.CHUNK_SIZE_IN_TILES;
   const numBuildings      = 3;
 
-  const cells = genEmptyChunkCells(chunk);
+  chunk.cells = genEmptyChunkCells(chunk);
 
   // generate some buildings
 
@@ -121,7 +125,7 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
   for (const building of buildings) {
     for (let i = building.rect.left; i < building.rect.right; i++) {
       for (let j = building.rect.top; j < building.rect.bottom; j++) {
-        cells[i][j] = {
+        chunk.cells[i][j] = {
           type       : { name: "house", building },
           height     : chunk.height,
           biome      : "foo",
@@ -132,7 +136,7 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
       }
     }
 
-    cells[building.rect.left + 1][building.rect.bottom] = {
+    chunk.cells[building.rect.left + 1][building.rect.bottom] = {
       type       : { name: "housemat", building },
       height     : chunk.height,
       biome      : "foo",
@@ -141,7 +145,7 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
       unlockStage: 0,
     };
 
-    cells[building.rect.left + 2][building.rect.bottom] = {
+    chunk.cells[building.rect.left + 2][building.rect.bottom] = {
       type       : { name: "housemat", building },
       height     : chunk.height,
       biome      : "foo",
@@ -153,27 +157,35 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
 
   // add a path (mostly for aesthetics)
 
-  let pathPoints: Point[] = [
-    new Point({ x: Math.floor(C.CHUNK_SIZE_IN_TILES / 2) , y: 0 }),
-    new Point({ x: Math.floor(C.CHUNK_SIZE_IN_TILES / 2) , y: C.CHUNK_SIZE_IN_TILES - 1 }),
+  let pointsToVisit: Point[] = [
     ...buildings.map(building => new Point({ 
       x: building.rect.x + 2, 
       y: building.rect.bottom + 1,
     })),
   ];
 
-  pathPoints = pathPoints.filter(p => chunk.rect.contains(p));
+  pointsToVisit = pointsToVisit.filter(p => chunk.rect.contains(p));
 
-  const line = [
-    ...pathfind(pathPoints[0], pathPoints[1], chunk),
-    ...pathfind(pathPoints[0], pathPoints[2], chunk),
-    ...pathfind(pathPoints[0], pathPoints[3], chunk),
-  ]
+  const isCollision = (cell: GridCell) => cell.isWall || cell.type.name === "housemat";
 
-  console.log(line);
+  let line = pathfind(
+    new Point({ x: Math.floor(C.CHUNK_SIZE_IN_TILES / 2) , y: 0 }),
+    new Point({ x: Math.floor(C.CHUNK_SIZE_IN_TILES / 2) , y: C.CHUNK_SIZE_IN_TILES - 1 }),
+    chunk,
+    isCollision
+  );
+
+  for (const point of pointsToVisit) {
+    const closestPointOnLine = Util.minBy(line, x => x.taxicabDistance(point))!;
+
+    line = [
+      ...line,
+      ...pathfind(point, closestPointOnLine, chunk, isCollision),
+    ]
+  }
 
   for (const p of line) {
-    cells[p.x][p.y] = {
+    chunk.cells[p.x][p.y] = {
       type       : { name: "path" },
       height     : chunk.height,
       biome      : "foo",
@@ -189,7 +201,7 @@ export function addStartingCityChunk(chunks: Chunk[][]): void {
     level : 0,
     x     : chunk.x,
     y     : chunk.y,
-    cells : cells,
+    cells : chunk.cells,
     rect  : chunk.rect,
   };
 }
