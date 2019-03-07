@@ -21,8 +21,7 @@ function getNeighboringPoints(point: Point, chunk: Chunk): Point[] {
   ).filter(point => chunk.rect.contains(point))
 }
 
-// TODO improve to use A*
-export function pathfind(start: Point, stop: Point, chunk: Chunk, isCollision: (cell: GridCell) => boolean): Point[] {
+export function pathfind_any(start: Point, stop: Point, getNeighboringPoints: (point: Point) => Point[], isCollision: (point: Point) => boolean): Point[] {
   const prev = new GoodMap<Point, PointAndDistance | null>();
   let edge: PointAndDistance[] = [{ point: start, distance: 0 }];
 
@@ -37,11 +36,10 @@ export function pathfind(start: Point, stop: Point, chunk: Chunk, isCollision: (
 
     if (current.point.x === stop.x && current.point.y === stop.y) { found = true; break; }
 
-    const neighbors = getNeighboringPoints(current.point, chunk);
+    const neighbors = getNeighboringPoints(current.point);
 
     for (const next of neighbors) {
-      const cell = chunk.cells[next.x][next.y];
-      if (isCollision(cell)) { continue; }
+      if (isCollision(next)) { continue; }
 
       if (!prev.has(next)) {
         edge.push({ point: next, distance: current.distance + 1 });
@@ -72,6 +70,11 @@ export function pathfind(start: Point, stop: Point, chunk: Chunk, isCollision: (
   }
 
   return path;
+}
+
+// TODO improve to use A*
+export function pathfind(start: Point, stop: Point, chunk: Chunk, isCollision: (cell: GridCell) => boolean): Point[] {
+    return pathfind_any(start, stop, p => getNeighboringPoints(p, chunk), p => isCollision(chunk.cells[p.x][p.y]));
 }
 
 export function addStartingCityChunk(chunks: Chunk[][]): void {
