@@ -26,12 +26,12 @@ import { Graphics } from "pixi.js";
 // Wild goose       (flocking, mean/mean)
 // Wolf             (flocking, dangerous, mean/mean) // dangerous
 
-export type MONSTER_STATE = "idle" | "aggro";
+export type MonsterState = "idle" | "aggro";
 export type MONSTER_MOVEMENT_AI = "sessile" | "cowardly" | "wandering" | "mean" | "patrolling"
 export type MONSTER_ADJECTIVES = "fast" | "flying" | "flocking"
 
 export type Species = {
-    behavior: {[K in MONSTER_STATE]?:  MONSTER_MOVEMENT_AI},
+    behavior: {[K in MonsterState]?:  MONSTER_MOVEMENT_AI},
     baseAttack: number,
     baseMaxHealth: number,
     baseExp: number,
@@ -72,5 +72,13 @@ export class MONSTER_CLASSES {
     baseExp: 0,
     shortName: 'Training Dummy',
     createGraphics: coloredSquareGenerator(0x8F80FF)
+  };
+  public static animal_0: Species = {
+    behavior: {"idle": "wandering", "aggro": "wandering"},
+    baseAttack: 1,
+    baseMaxHealth: 3,
+    baseExp: 0,
+    shortName: 'Green Slime',
+    createGraphics: coloredSquareGenerator(0x006000)
   };
 }

@@ -37,9 +37,6 @@ export abstract class CombatEntity extends Entity {
   }
 
   renderHealth(): void {
-    if (this.health <= 0) {
-      this.destroy();
-    }
     // TODO(bowei): do we really want to repeatedly call drawRect every time
     this.graphicsHealthFull.beginFill(CombatEntity.HEALTH_BAR_COLOR_RED);
     let width = CombatEntity.HEALTH_BAR_WIDTH * ( this.health / this.maxHealth );
@@ -55,4 +52,5 @@ export abstract class CombatEntity extends Entity {
   abstract update(): void;
   abstract customDestroyLogic(): void;
   abstract attack(target: CombatEntity): void;
+  abstract maybeUpdateState(): void;
 }

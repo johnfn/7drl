@@ -179,10 +179,12 @@ export class World extends Entity {
     if (Math.random() < monsterDensity) {
       // create a monster here
 
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.33) {
         new Monster({state, position, species: MONSTER_CLASSES.scarecrow_0 });
-      } else {
+      } else if (Math.random() < 0.5) {
         new Monster({state, position, species: MONSTER_CLASSES.scarecrow_1 });
+      } else {
+        new Monster({state, position, species: MONSTER_CLASSES.animal_0 });
       }
     }
   }

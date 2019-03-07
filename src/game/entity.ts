@@ -2,6 +2,7 @@ import { Graphics } from "pixi.js";
 import { Sprite, Texture, Container } from "pixi.js";
 import { GameState } from "./state";
 import { C } from "./constants";
+import { Point } from "./point";
 
 export abstract class Entity extends Container {
   state : GameState;
@@ -40,5 +41,9 @@ export abstract class Entity extends Container {
     this.parent.removeChild(this);
 
     this.customDestroyLogic();
+  }
+
+  getWorldPosition(): Point {
+    return new Point({ x : this.worldX, y: this.worldY });
   }
 }

@@ -54,6 +54,16 @@ export class Point {
     return Math.abs(p.x - this.x) + Math.abs(p.y - this.y);
   }
 
+  diagonalDistance(p: Point): number {
+    return Math.max(Math.abs(p.x - this.x), Math.abs(p.y - this.y));
+  }
+
+  l2Distance(p: Point): number {
+    let dx = Math.abs(p.x - this.x);
+    let dy = Math.abs(p.y - this.y);
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
   translate(p: { x: number, y: number }): Point {
     return new Point({
       x: this.x + p.x,

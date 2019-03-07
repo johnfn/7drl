@@ -80,23 +80,15 @@ export class Player extends CombatEntity {
     proposedY += deltaY;
 
     // check if monster is occupying this tile
-    let monster = this.state.getMonsterAt({ x: proposedX, y: proposedY });
-    if (monster) {
-      // do combat: you hit him
-      const target = monster;
-      // TODO(bowei): what's our atk value?
-      this.attack(target);
-      target.renderHealth();
-      // now monster should attack me back
-      target.attack(this);
-      this.renderHealth();
+    let targetMonster = this.state.getMonsterAt({ x: proposedX, y: proposedY });
+    if (targetMonster) {
+      this.attack(targetMonster);
+
+      // TODO(bowei): move this somewhere else
+      targetMonster.attack(this);
 
       collision = true;
-    }
-
-    let wall = this.state.world.isAWall(proposedX, proposedY);
-
-    if (wall) {
+    } else if (this.state.world.isAWall(proposedX, proposedY)) {
       collision = true;
     }
 
@@ -111,7 +103,15 @@ export class Player extends CombatEntity {
 
   attack(target: CombatEntity) {
     target.health -= 1;
+    target.maybeUpdateState();
   }
 
   customDestroyLogic() { }
+  maybeUpdateState() {
+    if (this.health <= 0) {
+      this.destroy();
+    }
+    this.renderHealth();
+    // TODO(bowei): game over
+  }
 }
