@@ -1,6 +1,6 @@
 export class C {
-  public static GAME_WIDTH  = 800;
-  public static GAME_HEIGHT = 600;
+  public static GAME_WIDTH  = window.outerWidth;
+  public static GAME_HEIGHT = window.outerHeight;
 
   /**
    * Width or height of number of visible tiles on your screen.

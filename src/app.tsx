@@ -6,7 +6,7 @@ class App extends Component {
     return (
       <div
         style={{
-          padding: "20px",
+          padding: "0px",
         }}
       >
         <Game />
