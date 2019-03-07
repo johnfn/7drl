@@ -25,11 +25,18 @@ export class Monster extends CombatEntity {
 
   update() {
     // TODO(bowei): compute number of actions, then do them
-    this.act();
+    //this.act();
+  }
+
+  act() {
+    if (!this.tryMove()) {
+      // always attack the player if possible. TODO(bowei): open up some options here
+      this.attack(this.state.player);
+    }
   }
 
   // either move according to movement pattern, or attack or something
-  act() {
+  tryMove(): boolean {
     let movementAIMode = this.species.behavior[this.activityState];
     // first find how far we are from player. if we are adjacent then don't move
     let distance: number = this.state.player.getWorldPosition().diagonalDistance(this.getWorldPosition());
@@ -62,9 +69,9 @@ export class Monster extends CombatEntity {
           // pathfind towards player in same chunk
           break;
       }
+      return true; // succeeded
     } else {
-      // always attack the player if possible. TODO(bowei): open up some options here
-      this.attack(this.state.player);
+      return false;
     }
   }
 

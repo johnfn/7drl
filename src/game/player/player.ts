@@ -28,44 +28,33 @@ export class Player extends CombatEntity {
     graphics.y = 4;
   }
 
-  getMovementDeltas(): { x: number, y: number } {
-    const deltas: { x: number, y: number } = { x: 0, y: 0 };
+  getMovementDeltas(): IPoint | null {
+    const deltas: IPoint = { x: 0, y: 0 };
     const frameDelay = this.state.tick % 6 === 0; // 10 repeats per sec
 
     if ((this.state.keyboard.delayedDown.H && frameDelay) || this.state.keyboard.justDown.H) {
       deltas.x -= 1;
-    }
-
-    if ((this.state.keyboard.delayedDown.L && frameDelay) || this.state.keyboard.justDown.L) {
+    } else if ((this.state.keyboard.delayedDown.L && frameDelay) || this.state.keyboard.justDown.L) {
       deltas.x += 1;
-    }
-
-    if ((this.state.keyboard.delayedDown.J && frameDelay) || this.state.keyboard.justDown.J) {
+    } else if ((this.state.keyboard.delayedDown.J && frameDelay) || this.state.keyboard.justDown.J) {
       deltas.y += 1;
-    }
-
-    if ((this.state.keyboard.delayedDown.K && frameDelay) || this.state.keyboard.justDown.K) {
+    } else if ((this.state.keyboard.delayedDown.K && frameDelay) || this.state.keyboard.justDown.K) {
       deltas.y -= 1;
-    }
-
-    if ((this.state.keyboard.delayedDown.Y && frameDelay) || this.state.keyboard.justDown.Y) {
+    } else if ((this.state.keyboard.delayedDown.Y && frameDelay) || this.state.keyboard.justDown.Y) {
       deltas.x -= 1;
       deltas.y -= 1;
-    }
-
-    if ((this.state.keyboard.delayedDown.U && frameDelay) || this.state.keyboard.justDown.U) {
+    } else if ((this.state.keyboard.delayedDown.U && frameDelay) || this.state.keyboard.justDown.U) {
       deltas.x += 1;
       deltas.y -= 1;
-    }
-
-    if ((this.state.keyboard.delayedDown.B && frameDelay) || this.state.keyboard.justDown.B) {
+    } else if ((this.state.keyboard.delayedDown.B && frameDelay) || this.state.keyboard.justDown.B) {
       deltas.x -= 1;
       deltas.y += 1;
-    }
-
-    if ((this.state.keyboard.delayedDown.N && frameDelay) || this.state.keyboard.justDown.N) {
+    } else if ((this.state.keyboard.delayedDown.N && frameDelay) || this.state.keyboard.justDown.N) {
       deltas.x += 1;
       deltas.y += 1;
+    // TODO(bowei): register the '.' key for pausing
+    } else {
+      return null;
     }
 
     return deltas;
@@ -73,7 +62,11 @@ export class Player extends CombatEntity {
 
   update() {
     let proposedX = this.worldX, proposedY = this.worldY;
-    const { x: deltaX, y: deltaY } = this.getMovementDeltas();
+    const command = this.getMovementDeltas();
+    if (!command) {
+      return; // player took no action
+    }
+    const { x: deltaX, y: deltaY } = command;
     let collision = false;
 
     proposedX += deltaX;
@@ -83,9 +76,6 @@ export class Player extends CombatEntity {
     let targetMonster = this.state.getMonsterAt({ x: proposedX, y: proposedY });
     if (targetMonster) {
       this.attack(targetMonster);
-
-      // TODO(bowei): move this somewhere else
-      targetMonster.attack(this);
 
       collision = true;
     } else if (this.state.world.isAWall(proposedX, proposedY)) {
@@ -97,11 +87,18 @@ export class Player extends CombatEntity {
       this.worldY = proposedY;
     }
 
+    if (deltaX != 0 || deltaY != 0) {
+      for (let m of this.state.getMonsters()) {
+        m.act();
+      }
+    }
+
     this.state.camera.setX(this.worldX * C.TILE_SIZE - C.GAME_WIDTH  / 2);
     this.state.camera.setY(this.worldY * C.TILE_SIZE - C.GAME_HEIGHT / 2);
   }
 
   attack(target: CombatEntity) {
+    // TODO(bowei): can we have some more attack
     target.health -= 1;
     target.maybeUpdateState();
   }

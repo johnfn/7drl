@@ -8,6 +8,7 @@ export abstract class Entity extends Container {
   state : GameState;
   worldX: number;
   worldY: number;
+  //parent: Container;
 
   constructor(props: {
     state   : GameState;
@@ -22,6 +23,7 @@ export abstract class Entity extends Container {
 
     this.state = props.state;
     props.parent.addChild(this);
+    //this.parent = props.parent; // NOTE(bowei): not sure if this conflicts with pixi??
     this.state.entities.push(this);
   }
 
