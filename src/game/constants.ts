@@ -1,6 +1,7 @@
 export class C {
-  public static GAME_WIDTH  = window.outerWidth || window.screen.width || 800;
-  public static GAME_HEIGHT = window.outerHeight || window.screen.height || 600;
+  public static GAME_WIDTH  = window.screen.availWidth || window.screen.width || 800;
+  public static GAME_HEIGHT = window.screen.availHeight || window.screen.height || 600;
+  public static CANVAS_BACKGROUND_COLOR = 0x1099bb ;
 
   /**
    * Width or height of number of visible tiles on your screen.
@@ -10,7 +11,7 @@ export class C {
   /**
    * Width of entire game world in tiles.
    */
-  public static MAP_SIZE_IN_TILES = 500;
+  //public static MAP_SIZE_IN_TILES = 500; // deprectaed, use WORLD_SIZE_IN_CHUNKS * CHUNK_SIZE_IN_TILES
 
   /**
    * Size of a single map chunk in tiles.
@@ -23,9 +24,9 @@ export class C {
   public static TILE_SIZE = 32;
 
   /**
-   * Size of a single tile in pixels.
+   * Dimension of the entire world in chunks.
    */
-  public static WORLD_SIZE_IN_SCREENS = 31;
+  public static WORLD_SIZE_IN_CHUNKS = 31;
 
   public static CORE_ITEMS = [
     'shield', // used to light something on FIRE. also can block attacks. also can fry eggs

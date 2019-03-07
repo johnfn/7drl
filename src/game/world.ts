@@ -41,11 +41,12 @@ export class World extends Entity {
 
     this.debug.visible = false;
 
-    this.map = this.generateMap();
+    this.map = this.generateMap(C.WORLD_SIZE_IN_CHUNKS);
     
-    this.drawWorldScreen(0, 0);
+    this.drawWorldScreen({x: 0,y: 0});
     
     this.debugDraw();
+    this.generateMonsters();
   }
 
   getActiveWorldScreen(): Rect {
@@ -59,8 +60,9 @@ export class World extends Entity {
     });
   }
 
-  generateMap(): WorldMap {
-    this.chunks = genWorld(33);
+  generateMap(size_in_chunks: number): WorldMap {
+    //this.chunks = genWorld(33);
+    this.chunks = genWorld(size_in_chunks + 2);
 
     const worldMap: WorldMap = {
       cells: [],
@@ -86,8 +88,8 @@ export class World extends Entity {
   }
 
   debugDraw(): void {
-    for (let i = 0; i < C.WORLD_SIZE_IN_SCREENS; i += 1) {
-      for (let j = 0; j < C.WORLD_SIZE_IN_SCREENS; j += 1) {
+    for (let i = 0; i < C.WORLD_SIZE_IN_CHUNKS; i += 1) {
+      for (let j = 0; j < C.WORLD_SIZE_IN_CHUNKS; j += 1) {
         const chunk = this.chunks[i][j];
         const h      = chunk.height;
 
@@ -108,7 +110,7 @@ export class World extends Entity {
     }
   }
 
-  drawWorldScreen(worldX: number, worldY: number): void {
+  drawWorldScreen({ x: worldX, y: worldY }: IPoint): void {
     // draw town
 
     for (let i = 0; i < C.CHUNK_SIZE_IN_TILES; i++) {
@@ -144,28 +146,16 @@ export class World extends Entity {
     return this.map.cells[worldX][worldY];
   }
 
-  generateMonsters(state: GameState): void {
+  generateMonsters(): void {
     for (let i = 0 ; i < this.map.cells.length; i++) {
       for (let j = 0 ; j < this.map.cells[i].length; j++) {
         let difficulty = this.map.cells[i][j].difficulty
-
-        this.generateMonstersByCell(state, this.map.cells[i][j], {x: i , y: j} );
+        this.generateMonstersByCell(this.map.cells[i][j], {x: i , y: j} );
       }
     }
-
-    // generate some random mosters
-    // hmmm how many monsters?
-    //const monsterDensity = [1./8, 1./16];
-    //let area = C.SCREEN_SIZE_IN_TILES * C.SCREEN_SIZE_IN_TILES;
-    //for (let i = 0; i < Util.RandomRange(area * monsterDensity[0], area * monsterDensity[1]); i++) {
-    //  let pos = { x: Util.RandomRange(0, 50), y: Util.RandomRange(0, 50) };
-    //  if (!state.getMonsterAt(pos)) {
-    //    state.monsters.push(new Monster(state, pos));
-    //  }
-    //}
   }
 
-  generateMonstersByCell(state: GameState, cell: GridCell, position: IPoint): void {
+  generateMonstersByCell(cell: GridCell, position: IPoint): void {
     let monsterDensity = 1 / 80;
 
     //if (cell.difficulty == 0) {
@@ -180,11 +170,11 @@ export class World extends Entity {
       // create a monster here
 
       if (Math.random() < 0.33) {
-        new Monster({state, position, species: MONSTER_CLASSES.scarecrow_0 });
+        new Monster({state: this.state, position, species: MONSTER_CLASSES.scarecrow_0 });
       } else if (Math.random() < 0.5) {
-        new Monster({state, position, species: MONSTER_CLASSES.scarecrow_1 });
+        new Monster({state: this.state, position, species: MONSTER_CLASSES.scarecrow_1 });
       } else {
-        new Monster({state, position, species: MONSTER_CLASSES.animal_0 });
+        new Monster({state: this.state, position, species: MONSTER_CLASSES.animal_0 });
       }
     }
   }

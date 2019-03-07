@@ -71,8 +71,19 @@ export class Camera {
     });
   }
 
+  static getActiveWorldScreen(state: GameState): Rect {
+    const player = state.player;
+
+    return new Rect({
+      x: Math.floor(player.worldX / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      y: Math.floor(player.worldY / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      w: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
+      h: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE
+    });
+  }
+
   update(state: GameState) {
-    const activeRect = state.world.getActiveWorldScreen();
+    const activeRect = Camera.getActiveWorldScreen(state);
 
     if (this.bounds !== activeRect) {
       this.bounds = activeRect;

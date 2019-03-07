@@ -26,7 +26,7 @@ export class Game extends React.Component<{}, {}> {
     const app = new Application({
       width          : C.GAME_WIDTH,
       height         : C.GAME_HEIGHT,
-      backgroundColor: 0x1099bb,
+      backgroundColor: C.CANVAS_BACKGROUND_COLOR,
       view           : this.canvas,
     });
 
@@ -37,14 +37,12 @@ export class Game extends React.Component<{}, {}> {
       keyboard,
     });
 
-    const camera = new Camera();
-
-    this.state.camera = camera;
+    this.state.camera = new Camera();
 
     this.state.world  = new World(this.state);
+
     const playerInitialPosition = { x: 5, y: 5 };
     this.state.player = new Player(this.state, playerInitialPosition);
-    this.state.world.generateMonsters(this.state);
 
     window.requestAnimationFrame(() => this.gameLoop());
   }

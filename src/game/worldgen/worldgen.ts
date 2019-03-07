@@ -60,6 +60,7 @@ export type Chunk = {
     | { name: "grassland" }
 }
 
+
 export function genWorld(size: number): Chunk[][] {
   const heights = generateHeights(size);
   const chunks  = heights.map((row, i) => row.map((v, j) => {
@@ -106,7 +107,14 @@ export function genChunkCells(chunk: Chunk): GridCell[][] {
   return cells;
 }
 
-function generateHeights(size: number): number[][] {
+function roundToPow2Plus1(size: number): number {
+    return 33;
+}
+
+// Generate a size x size array of perlin noise between 0 and 1
+// size must be power of 2 plus 1
+function generateHeights(lsize: number): number[][] {
+  const size: number = roundToPow2Plus1(lsize);
   let result: number[][] = [];
 
   for (let i = 0; i < size; i++) {
