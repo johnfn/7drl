@@ -7,7 +7,8 @@ class KeyInfo {
     .concat("Up")
     .concat("Down")
     .concat("Left")
-    .concat("Right");
+    .concat("Right")
+    .concat(".");
 
   Q       : boolean = false;
   W       : boolean = false;
@@ -41,6 +42,7 @@ class KeyInfo {
   Left    : boolean = false;
   Right   : boolean = false;
   Spacebar: boolean = false;
+  ".": boolean = false;
 }
 
 class KeyInfoNumber {

@@ -52,7 +52,8 @@ export class Player extends CombatEntity {
     } else if ((this.state.keyboard.delayedDown.N && frameDelay) || this.state.keyboard.justDown.N) {
       deltas.x += 1;
       deltas.y += 1;
-    // TODO(bowei): register the '.' key for pausing
+    } else if ((this.state.keyboard.delayedDown['.'] && frameDelay) || this.state.keyboard.justDown['.']) {
+      // try to rest in place
     } else {
       return null;
     }
