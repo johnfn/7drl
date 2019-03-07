@@ -1,7 +1,5 @@
 export class C {
-  public static GAME_WIDTH  = window.screen.availWidth || window.screen.width || 800;
-  public static GAME_HEIGHT = window.screen.availHeight || window.screen.height || 600;
-  public static CANVAS_BACKGROUND_COLOR = 0x1099bb ;
+  public static CANVAS_BACKGROUND_COLOR = 0xFFFFFF ;
 
   /**
    * Width or height of number of visible tiles on your screen.
@@ -24,10 +22,19 @@ export class C {
   public static TILE_SIZE = 32;
 
   /**
+   * Dimensions of the game window.
+   */
+  public static GAME_WIDTH  = Math.min(window.screen.availWidth || window.screen.width || 800, 960)
+  public static GAME_HEIGHT = Math.min(window.screen.availHeight || window.screen.height || 600, 960)
+
+  /**
    * Dimension of the entire world in chunks.
    */
   public static WORLD_SIZE_IN_CHUNKS = 31;
 
+  /**
+   * List of key items used to unlock areas. WIP
+   */
   public static CORE_ITEMS = [
     'shield', // used to light something on FIRE. also can block attacks. also can fry eggs
     'gauntlets', // gives a strength boost in combat. also can be used to climb cliffs. also useful in powderizing some materials.

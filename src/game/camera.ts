@@ -1,6 +1,7 @@
 import { Rect } from "./rect";
 import { C } from "./constants";
 import { GameState } from "./state";
+import { IPoint } from "./point";
 
 export class Camera {
   width        : number;
@@ -55,6 +56,16 @@ export class Camera {
 
   get centerY(): number {
     return -this.desiredStageY + this.height / 2;
+  }
+
+  set center(point: IPoint) {
+    console.log('setting center to ' , point);
+    this.centerX = point.x;
+    this.centerY = point.y;
+  }
+
+  get center(): IPoint {
+    return { x: this.centerX, y : this.centerY };
   }
 
   constructor() {

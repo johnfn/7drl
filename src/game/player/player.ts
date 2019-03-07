@@ -96,6 +96,7 @@ export class Player extends CombatEntity {
 
     this.state.camera.setX(this.worldX * C.TILE_SIZE - C.GAME_WIDTH  / 2);
     this.state.camera.setY(this.worldY * C.TILE_SIZE - C.GAME_HEIGHT / 2);
+    //this.state.camera.center = { x : this.worldX * C.TILE_SIZE, y: this.worldY * C.TILE_SIZE };
   }
 
   attack(target: CombatEntity) {

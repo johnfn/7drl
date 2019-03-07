@@ -49,17 +49,6 @@ export class World extends Entity {
     this.generateMonsters();
   }
 
-  getActiveWorldScreen(): Rect {
-    const player = this.state.player;
-
-    return new Rect({
-      x: Math.floor(player.worldX / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
-      y: Math.floor(player.worldY / C.WINDOW_SIZE_IN_TILES) * C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
-      w: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE,
-      h: C.WINDOW_SIZE_IN_TILES * C.TILE_SIZE
-    });
-  }
-
   generateMap(size_in_chunks: number): WorldMap {
     //this.chunks = genWorld(33);
     this.chunks = genWorld(size_in_chunks + 2);
