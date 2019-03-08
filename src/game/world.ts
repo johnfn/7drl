@@ -23,7 +23,7 @@ export class World extends Entity {
    * All of the data in the entire world
    */
   map     : WorldMap;
-  debug   : Graphics;
+  //debug   : Graphics;
   chunks !: Chunk[][];
 
   constructor(state: GameState) {
@@ -36,16 +36,18 @@ export class World extends Entity {
     
     this.addChild(this.graphics);
 
-    this.debug    = new Graphics();
-    this.addChild(this.debug);
+    //this.debug    = new Graphics();
+    //this.addChild(this.debug);
+    //this.state.overlayStage.addChild(this.debug);
 
-    this.debug.visible = false;
+    //this.debug.visible = false;
 
     this.map = this.generateMap(C.WORLD_SIZE_IN_CHUNKS);
     
     this.drawWorldScreen({x: 0,y: 0});
     
-    this.debugDraw();
+    //this.debugDraw();
+    new DebugDraw({state, chunks: this.chunks});
     this.generateMonsters();
   }
 
@@ -76,28 +78,28 @@ export class World extends Entity {
     return worldMap;
   }
 
-  debugDraw(): void {
-    for (let i = 0; i < C.WORLD_SIZE_IN_CHUNKS; i += 1) {
-      for (let j = 0; j < C.WORLD_SIZE_IN_CHUNKS; j += 1) {
-        const chunk = this.chunks[i][j];
-        const h      = chunk.height;
+  //debugDraw(): void {
+  //  for (let i = 0; i < C.WORLD_SIZE_IN_CHUNKS; i += 1) {
+  //    for (let j = 0; j < C.WORLD_SIZE_IN_CHUNKS; j += 1) {
+  //      const chunk = this.chunks[i][j];
+  //      const h      = chunk.height;
 
-        if (chunk.type.name === "starting city") {
-          this.debug.beginFill(new Color(255, 0, 0).toNumber());
-        } else if (chunk.level === 1) {
-          this.debug.beginFill(new Color(200, 0, 0).toNumber());
-        } else if (chunk.level === 2) {
-          this.debug.beginFill(new Color(150, 0, 0).toNumber());
-        } else if (chunk.level === 3) {
-          this.debug.beginFill(new Color(100, 0, 0).toNumber());
-        } else {
-          this.debug.beginFill(new Color(h * 255, h * 255, h * 255).toNumber());
-        }
+  //      if (chunk.type.name === "starting city") {
+  //        this.debug.beginFill(new Color(255, 0, 0).toNumber());
+  //      } else if (chunk.level === 1) {
+  //        this.debug.beginFill(new Color(200, 0, 0).toNumber());
+  //      } else if (chunk.level === 2) {
+  //        this.debug.beginFill(new Color(150, 0, 0).toNumber());
+  //      } else if (chunk.level === 3) {
+  //        this.debug.beginFill(new Color(100, 0, 0).toNumber());
+  //      } else {
+  //        this.debug.beginFill(new Color(h * 255, h * 255, h * 255).toNumber());
+  //      }
 
-        this.debug.drawRect(i * 20, j * 20, 15, 15);
-      }
-    }
-  }
+  //      this.debug.drawRect(i * 20, j * 20, 15, 15);
+  //    }
+  //  }
+  //}
 
   drawWorldScreen({ x: worldX, y: worldY }: IPoint): void {
     // draw town
@@ -169,11 +171,60 @@ export class World extends Entity {
   }
 
   update() {
+    //if (this.state.keyboard.justDown.D) {
+    //  this.debug.visible = !this.debug.visible;
+    //}
+  }
+
+  customDestroyLogic() { }
+}
+
+class DebugDraw extends Entity {
+  chunks: Chunk[][];
+  debug: Graphics;
+
+  constructor(props: {
+    state : GameState;
+    chunks: Chunk[][];
+  }) {
+    super({
+      state: props.state,
+      parent: props.state.overlayStage
+    });
+    this.chunks = props.chunks;
+    this.debug = new Graphics();
+    this.addChild(this.debug);
+    this.debug.visible = false;
+    this.debugDraw();
+  }
+
+  update() {
     if (this.state.keyboard.justDown.D) {
       this.debug.visible = !this.debug.visible;
     }
   }
+  debugDraw(): void {
+    for (let i = 0; i < C.WORLD_SIZE_IN_CHUNKS; i += 1) {
+      for (let j = 0; j < C.WORLD_SIZE_IN_CHUNKS; j += 1) {
+        const chunk = this.chunks[i][j];
+        const h      = chunk.height;
 
+        if (chunk.type.name === "starting city") {
+          this.debug.beginFill(new Color(255, 0, 0).toNumber());
+        } else if (chunk.level === 1) {
+          this.debug.beginFill(new Color(200, 0, 0).toNumber());
+        } else if (chunk.level === 2) {
+          this.debug.beginFill(new Color(150, 0, 0).toNumber());
+        } else if (chunk.level === 3) {
+          this.debug.beginFill(new Color(100, 0, 0).toNumber());
+        } else {
+          this.debug.beginFill(new Color(h * 255, h * 255, h * 255).toNumber());
+        }
+
+        this.debug.drawRect(i * 20, j * 20, 15, 15);
+      }
+    }
+  }
   customDestroyLogic() { }
 }
  

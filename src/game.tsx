@@ -6,6 +6,7 @@ import { C } from './game/constants';
 import { Player } from './game/player/player';
 import { Keyboard } from './game/keyboard';
 import { Camera } from './game/camera';
+import { Overlay } from "./game/overlay";
 
 export class Game extends React.Component<{}, {}> {
   initialized = false;
@@ -32,29 +33,33 @@ export class Game extends React.Component<{}, {}> {
 
     const keyboard = new Keyboard();
 
+    const camera = new Camera();
+    const overlay = new Overlay();
+
     this.state = new GameState({
       app,
       keyboard,
+      camera,
+      overlay
     });
 
-    this.state.camera = new Camera();
+    //this.state.world  = new World(this.state);
 
-    this.state.world  = new World(this.state);
-
-    const playerInitialPosition = { x: 5, y: 5 };
-    this.state.player = new Player(this.state, playerInitialPosition);
+    //const playerInitialPosition = { x: 5, y: 5 };
+    //this.state.player = new Player(this.state, playerInitialPosition);
 
     window.requestAnimationFrame(() => this.gameLoop());
   }
 
   gameLoop() {
-    this.state.camera.update(this.state);
-    this.state.keyboard.update(this.state.tick);
-    this.state.tick++;
+    this.state.update();
+    //this.state.camera.update(this.state);
+    //this.state.keyboard.update(this.state.tick);
+    //this.state.tick++;
 
-    for (const ent of this.state.entities) {
-      ent.baseUpdate();
-    }
+    //for (const ent of this.state.entities) {
+    //  ent.baseUpdate();
+    //}
 
     window.requestAnimationFrame(() => this.gameLoop());
   }
