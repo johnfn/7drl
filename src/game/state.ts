@@ -24,12 +24,10 @@ export class GameState {
     app     : Application;
     keyboard: Keyboard;
     camera  : Camera;
-    overlay : Overlay;
   }) {
     this.app      = props.app;
     this.keyboard = props.keyboard;
     this.camera   = props.camera;
-    this.overlay  = props.overlay;
     this.stage    = new Container();
     this.app.stage.addChild(this.stage);
     this.overlayStage    = new Container();
@@ -37,6 +35,7 @@ export class GameState {
     this.entities = [];
 
     // must initialize in correct order - probably
+    this.overlay  = new Overlay({state: this});
     this.world  = new World(this);
 
     const playerInitialPosition = { x: 5, y: 5 };

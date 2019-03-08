@@ -34,19 +34,12 @@ export class Game extends React.Component<{}, {}> {
     const keyboard = new Keyboard();
 
     const camera = new Camera();
-    const overlay = new Overlay();
 
     this.state = new GameState({
       app,
       keyboard,
-      camera,
-      overlay
+      camera
     });
-
-    //this.state.world  = new World(this.state);
-
-    //const playerInitialPosition = { x: 5, y: 5 };
-    //this.state.player = new Player(this.state, playerInitialPosition);
 
     window.requestAnimationFrame(() => this.gameLoop());
   }
