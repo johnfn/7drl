@@ -22,10 +22,13 @@ export class C {
   public static TILE_SIZE = 32;
 
   /**
-   * Dimensions of the game window.
+   * Dimensions of the game area.
    */
-  public static GAME_WIDTH  = Math.min(window.screen.availWidth || window.screen.width || 800, 960)
-  public static GAME_HEIGHT = Math.min(window.screen.availHeight || window.screen.height || 600, 960)
+  static DEVICE_WIDTH = Math.min(window.innerWidth || Infinity, document.documentElement.clientWidth || Infinity, C.TILE_SIZE * C.WINDOW_SIZE_IN_TILES);
+  static DEVICE_HEIGHT = Math.min(window.innerHeight || Infinity, document.documentElement.clientHeight || Infinity, C.TILE_SIZE * C.WINDOW_SIZE_IN_TILES)
+  static DEVICE_PADDING = 2; // padding in pixels to add on each side of the game area. (At least.)
+  public static GAME_WIDTH = Math.floor((C.DEVICE_WIDTH - 2 * C.DEVICE_PADDING) / C.TILE_SIZE) * C.TILE_SIZE;
+  public static GAME_HEIGHT = Math.floor((C.DEVICE_HEIGHT - 2 * C.DEVICE_PADDING) / C.TILE_SIZE) * C.TILE_SIZE;
 
   /**
    * Dimension of the entire world in chunks.
