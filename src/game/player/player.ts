@@ -12,7 +12,7 @@ export class Player extends CombatEntity {
     super({
       state,
       maxHealth: 20,
-      parent   : state.app.stage,
+      parent   : state.stage,
       worldX   : playerStart.x,
       worldY   : playerStart.y
     });

@@ -12,9 +12,9 @@ export class Monster extends CombatEntity {
   // position = world position
   constructor(props: {state: GameState, position: IPoint, species: Species }) {
     super({
-      state: props.state,
-      maxHealth: props.species.baseMaxHealth,
-      parent: props.state.app.stage,
+      state      : props.state,
+      maxHealth  : props.species.baseMaxHealth,
+      parent     : props.state.stage,
       worldX     : props.position.x,
       worldY     : props.position.y,
     });

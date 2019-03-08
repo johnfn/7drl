@@ -29,7 +29,7 @@ export class World extends Entity {
   constructor(state: GameState) {
     super({
       state,
-      parent: state.app.stage,
+      parent: state.stage,
     });
 
     this.graphics = new Graphics();
